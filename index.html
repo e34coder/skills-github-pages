@@ -1,1 +1,81 @@
-hellow world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock and Date</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #edf1f2;
+        }
+        .time {
+            font-size: 5em;  /* Much bigger font for the time */
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .day {
+            font-size: 3em;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        .date {
+            font-size: 3em;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="day" id="day"></div>
+    <div class="time" id="clock"></div>
+    <div class="date" id="date"></div>
+
+    <script>
+        function updateClock() {
+            const clockElement = document.getElementById('clock');
+            const dateElement = document.getElementById('date');
+            const dayElement = document.getElementById('day');
+            
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const hour12 = hours % 12 || 12;
+            const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
+            
+            // Determine the part of the day (morning, afternoon, evening)
+            let partOfDay = '';
+            if (hours >= 5 && hours < 12) {
+                partOfDay = 'Morning';
+            } else if (hours >= 12 && hours < 18) {
+                partOfDay = 'Afternoon';
+            } else {
+                partOfDay = 'Evening';
+            }
+
+            clockElement.textContent = formattedTime;
+
+            const optionsDay = { weekday: 'long' };
+            const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDay = now.toLocaleDateString('en-US', optionsDay);
+            const formattedDate = now.toLocaleDateString('en-US', optionsDate);
+            
+            dayElement.textContent = `${formattedDay} ${partOfDay}`;
+            dateElement.textContent = formattedDate;
+        }
+
+        setInterval(updateClock, 60000);  // update every minute to remove seconds
+        updateClock();  // initial call to show time immediately
+    </script>
+</body>
+</html>
