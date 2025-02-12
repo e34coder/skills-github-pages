@@ -17,20 +17,21 @@
             justify-content: center;
             align-items: center;
             font-family: Arial, sans-serif;
-            background-color: #edf1f2;
+            background-color: #121212;  /* Dark background */
+            color: #f0f0f0;  /* Off white text color */
         }
         .time {
-            font-size: 6em;  /* Much bigger font for the time */
+            font-size: 7em;  /* Much bigger font for the time */
             font-weight: bold;
             margin-bottom: 10px;
         }
         .day {
-            font-size: 4em;
+            font-size: 8em;
             font-weight: normal;
             margin-bottom: 10px;
         }
         .date {
-            font-size: 4em;
+            font-size: 7em;
             font-weight: normal;
         }
     </style>
@@ -52,25 +53,15 @@
             const ampm = hours >= 12 ? 'PM' : 'AM';
             const hour12 = hours % 12 || 12;
             const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
-            
-            // Determine the part of the day (morning, afternoon, evening)
-            let partOfDay = '';
-            if (hours >= 5 && hours < 12) {
-                partOfDay = 'Morning';
-            } else if (hours >= 12 && hours < 18) {
-                partOfDay = 'Afternoon';
-            } else {
-                partOfDay = 'Evening';
-            }
 
             clockElement.textContent = formattedTime;
 
             const optionsDay = { weekday: 'long' };
             const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDay = now.toLocaleDateString('en-US', optionsDay);
+            const formattedDay = now.toLocaleDateString('en-US', optionsDay);  // Only day of the week
             const formattedDate = now.toLocaleDateString('en-US', optionsDate);
             
-            dayElement.textContent = `${formattedDay} ${partOfDay}`;
+            dayElement.textContent = formattedDay;  // Just display the day of the week
             dateElement.textContent = formattedDate;
         }
 
