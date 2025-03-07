@@ -21,7 +21,7 @@
             color: #f0f0f0;  /* Off white text color */
         }
         .time {
-            font-size: 5em;  /* Much bigger font for the time */
+            font-size: 4em;  /* Much bigger font for the time */
             margin-bottom: 10px;
         }
         .day {
@@ -30,8 +30,9 @@
             margin-bottom: 10px;
         }
         .date {
-            font-size: 5em;
+            font-size: 2.5em;
             font-weight: normal;
+            margin-bottom: 10px;
         }
         .prayer-info {
             font-size: 3em;
@@ -77,6 +78,7 @@
             } else {
                 partOfDay = 'Evening';
             }
+            partOfDay = ""
 
             clockElement.textContent = formattedTime;
 
