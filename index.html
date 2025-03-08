@@ -52,6 +52,8 @@
     
     <!-- Prayer Info Section on Same Line -->
     <div class="prayer-info">
+        <p id="current-prayer-name" class="prayer-name"></p>
+        <p id="current-prayer-time" class="prayer-time"></p>
         <p id="prayer-name" class="prayer-name"></p>
         <p id="prayer-time" class="prayer-time"></p>
     </div>
@@ -78,7 +80,7 @@
             } else {
                 partOfDay = 'Evening';
             }
-            partOfDay = ""
+            partOfDay = "";
 
             clockElement.textContent = formattedTime;
 
@@ -94,7 +96,7 @@
         setInterval(updateClock, 60000);  // update every minute to remove seconds
         updateClock();  // initial call to show time immediately
 
-        // Fetch Prayer Times and Next Prayer Information
+        // Fetch Prayer Times and Current Prayer Information
         async function fetchPrayerTimes() {
             const latitude = 51.5074; // Change to your latitude
             const longitude = -0.1278; // Change to your longitude
@@ -115,41 +117,54 @@
                     { name: 'Isha', time: timings.Isha },
                 ];
                 
-                // Find the next prayer time
+                // Find the current and next prayer time
                 const now = new Date();
                 const currentTime = now.getHours() * 60 + now.getMinutes();
                 
+                let currentPrayer = null;
                 let nextPrayer = null;
+                let currentPrayerTime = null;
                 let nextPrayerTime = null;
                 
-                for (let prayer of prayerTimes) {
-                    const prayerTime = prayer.time.split(':');
+                // Loop through prayer times to find the current and next prayer
+                for (let i = 0; i < prayerTimes.length; i++) {
+                    const prayerTime = prayerTimes[i].time.split(':');
                     const prayerTimeMinutes = parseInt(prayerTime[0]) * 60 + parseInt(prayerTime[1]);
-                    if (prayerTimeMinutes > currentTime) {
-                        nextPrayer = prayer.name;
-                        nextPrayerTime = prayer.time;
-                        break;
+
+                    if (prayerTimeMinutes <= currentTime) {
+                        currentPrayer = prayerTimes[i].name;
+                        currentPrayerTime = prayerTimes[i].time;
+                    }
+
+                    if (prayerTimeMinutes > currentTime && !nextPrayer) {
+                        nextPrayer = prayerTimes[i].name;
+                        nextPrayerTime = prayerTimes[i].time;
                     }
                 }
 
-                if (!nextPrayer) {
-                    nextPrayer = prayerTimes[0].name;
-                    nextPrayerTime = prayerTimes[0].time;
+                // If no current prayer found (meaning it's after the last prayer), set it to the last prayer
+                if (!currentPrayer) {
+                    currentPrayer = prayerTimes[prayerTimes.length - 1].name;
+                    currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
                 }
 
                 // Format prayer time to remove leading zeros and show AM/PM
-                const [hour, minute] = nextPrayerTime.split(':');
-                const formattedHour = parseInt(hour); // Remove leading zero if any
+                const formatPrayerTime = (time) => {
+                    const [hour, minute] = time.split(':');
+                    const formattedHour = parseInt(hour); // Remove leading zero if any
 
-                // Create a Date object for formatting the prayer time in AM/PM format
-                const prayerDate = new Date();
-                prayerDate.setHours(formattedHour);
-                prayerDate.setMinutes(minute);
-                let formattedTime = prayerDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                    // Create a Date object for formatting the prayer time in AM/PM format
+                    const prayerDate = new Date();
+                    prayerDate.setHours(formattedHour);
+                    prayerDate.setMinutes(minute);
+                    return prayerDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                };
 
-                // Display prayer name and time on the same line
+                // Display current and next prayer name and time on the same line
+                document.getElementById('current-prayer-name').textContent = currentPrayer;
+                document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
                 document.getElementById('prayer-name').textContent = nextPrayer;
-                document.getElementById('prayer-time').textContent = formattedTime;
+                document.getElementById('prayer-time').textContent = formatPrayerTime(nextPrayerTime);
                 
             } catch (error) {
                 console.error('Error fetching prayer times:', error);
