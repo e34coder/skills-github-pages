@@ -25,7 +25,7 @@
             margin-bottom: 10px;
         }
         .day {
-            font-size: 5em;
+            font-size: 4.5em;
             font-weight: normal;
             margin-bottom: 10px;
         }
@@ -41,7 +41,7 @@
             align-items: center;
         }
         .prayer-name, .prayer-time {
-            margin: 0 0.5em; /* Add space between the prayer name and time */
+            margin: 0 0.2em; /* Add space between the prayer name and time */
         }
     </style>
 </head>
@@ -59,6 +59,23 @@
     </div>
 
     <script>
+        let userLatitude, userLongitude;
+
+        // Get current location using Geolocation API
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+                    fetchPrayerTimes();  // Fetch prayer times after getting location
+                }, function(error) {
+                    console.error("Error getting geolocation: ", error);
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
         function updateClock() {
             const clockElement = document.getElementById('clock');
             const dateElement = document.getElementById('date');
@@ -80,7 +97,6 @@
             } else {
                 partOfDay = 'Evening';
             }
-            partOfDay = "";
 
             clockElement.textContent = formattedTime;
 
@@ -98,11 +114,13 @@
 
         // Fetch Prayer Times and Current Prayer Information
         async function fetchPrayerTimes() {
-            const latitude = 51.5074; // Change to your latitude
-            const longitude = -0.1278; // Change to your longitude
+            if (!userLatitude || !userLongitude) {
+                console.log('Waiting for location...');
+                return;  // Wait until we have location data
+            }
+
             const method = 2; // Calculation method, change it according to your preferences
-            
-            const url = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=${method}`;
+            const url = `https://api.aladhan.com/v1/timings?latitude=${userLatitude}&longitude=${userLongitude}&method=${method}`;
             
             try {
                 const response = await fetch(url);
@@ -148,16 +166,18 @@
                     currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
                 }
 
-                // Format prayer time to remove leading zeros and show AM/PM
+                // Format prayer time to remove AM/PM and use 12-hour format without suffix
                 const formatPrayerTime = (time) => {
                     const [hour, minute] = time.split(':');
-                    const formattedHour = parseInt(hour); // Remove leading zero if any
+                    let formattedHour = parseInt(hour); // Remove leading zero if any
+                    let formattedMinute = minute;
 
-                    // Create a Date object for formatting the prayer time in AM/PM format
-                    const prayerDate = new Date();
-                    prayerDate.setHours(formattedHour);
-                    prayerDate.setMinutes(minute);
-                    return prayerDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                    // Ensure the hour is in 12-hour format (1 to 12)
+                    if (formattedHour > 12) {
+                        formattedHour -= 12;
+                    }
+
+                    return `${formattedHour}:${formattedMinute}`;
                 };
 
                 // Display current and next prayer name and time on the same line
@@ -171,8 +191,8 @@
             }
         }
 
-        fetchPrayerTimes();
-        setInterval(fetchPrayerTimes, 60000); // Update every minute
+        // Call the getLocation function to get the user's location when the page loads
+        window.onload = getLocation;
     </script>
 </body>
 </html>
