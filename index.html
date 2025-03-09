@@ -76,12 +76,22 @@
             }
         }
 
+        let lastSyncTime = new Date().getTime();
+
         function updateClock() {
             const clockElement = document.getElementById('clock');
             const dateElement = document.getElementById('date');
             const dayElement = document.getElementById('day');
             
             const now = new Date();
+            const currentTime = now.getTime();
+            const elapsedTime = currentTime - lastSyncTime;
+
+            // Every minute, adjust time based on the system clock to avoid drift
+            if (elapsedTime >= 60000) {
+                lastSyncTime = currentTime;  // Sync the lastSyncTime with the system clock
+            }
+
             const hours = now.getHours();
             const minutes = now.getMinutes();
             const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -109,16 +119,9 @@
             dateElement.textContent = formattedDate;
         }
 
-        // Set up the clock to update at the start of the next minute
         function startClock() {
-            const now = new Date();
-            const msUntilNextMinute = (60 - now.getSeconds()) * 1000;
-
-            // Set the clock to update exactly when the next minute starts
-            setTimeout(function() {
-                updateClock(); // Update the clock immediately
-                setInterval(updateClock, 60000);  // Update every minute thereafter
-            }, msUntilNextMinute);
+            updateClock();  // Initialize the clock immediately
+            setInterval(updateClock, 1000);  // Update the clock every second
         }
 
         startClock();  // Start the clock
@@ -163,18 +166,26 @@
                     if (prayerTimeMinutes <= currentTime) {
                         currentPrayer = prayerTimes[i].name;
                         currentPrayerTime = prayerTimes[i].time;
+                     
                     }
+                 
 
                     if (prayerTimeMinutes > currentTime && !nextPrayer) {
+                       
                         nextPrayer = prayerTimes[i].name;
                         nextPrayerTime = prayerTimes[i].time;
                     }
                 }
 
                 // If no current prayer found (meaning it's after the last prayer), set it to the last prayer
-                if (!currentPrayer) {
+                if (currentPrayer && !nextPrayer) {
+                  
                     currentPrayer = prayerTimes[prayerTimes.length - 1].name;
                     currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
+
+                    // Handle transition from Isha to Fajr
+                    nextPrayer = "Fajr";
+                    nextPrayerTime = prayerTimes[0].time;
                 }
 
                 // Format prayer time to remove AM/PM and use 12-hour format without suffix
