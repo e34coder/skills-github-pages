@@ -75,6 +75,7 @@
 
   <script>
     let userLatitude, userLongitude;
+    let prayerTimesData = null; // Store the fetched prayer times
     let lastFetchDate = null; // Track the last date when prayer times were fetched
     // Get current location using Geolocation API
     function getLocation() {
@@ -82,7 +83,7 @@
         navigator.geolocation.getCurrentPosition(function(position) {
           userLatitude = position.coords.latitude;
           userLongitude = position.coords.longitude;
-          //fetchPrayerTimes(); // Fetch prayer times after getting location
+          fetchPrayerTimes(); // Fetch prayer times after getting location
         }, function(error) {
           console.error("Error getting geolocation: ", error);
         });
@@ -123,12 +124,11 @@
       const formattedDate = now.toLocaleDateString('en-US', optionsDate);
       dayElement.textContent = `${formattedDay} ${partOfDay}`;
       dateElement.textContent = formattedDate;
-      fetchPrayerTimes();
     }
 
     function startClock() {
       updateClock(); // Initialize the clock immediately
-      setInterval(updateClock, 10000); // Update the clock every 10 second
+      setInterval(updateClock, 10000); // Update the clock every 10 seconds
     }
     startClock(); // Start the clock
     // Fetch Prayer Times and Current Prayer Information
@@ -144,7 +144,6 @@
         console.log("Prayer times already fetched today.");
         return; // Prayer times have already been fetched for today
       }
-      console.log("ok1")
       // If it's a new day, fetch prayer times
       const method = 2; // Calculation method, change it according to your preferences
       const url = `https://api.aladhan.com/v1/timings?latitude=${userLatitude}&longitude=${userLongitude}&method=${method}`;
@@ -152,7 +151,7 @@
         const response = await fetch(url);
         const data = await response.json();
         const timings = data.data.timings;
-        const prayerTimes = [{
+        prayerTimesData = [{
             name: 'Fajr',
             time: timings.Fajr
           },
@@ -173,58 +172,62 @@
             time: timings.Isha
           },
         ];
-        // Find the current and next prayer time
-        const now = new Date();
-        const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
-        let currentPrayer = null;
-        let nextPrayer = null;
-        let currentPrayerTime = null;
-        let nextPrayerTime = null;
-        for (let i = 0; i < prayerTimes.length; i++) {
-          const prayerTime = prayerTimes[i].time.split(':');
-          const prayerTimeMinutes = parseInt(prayerTime[0]) * 60 + parseInt(prayerTime[1]);
-          if (prayerTimeMinutes > currentTimeInMinutes) {
-            currentPrayer = prayerTimes[prayerTimes.length - 1].name;
-            currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
-            nextPrayer = prayerTimes[0].name;
-            nextPrayerTime = prayerTimes[0].time;
-            break;
-          } else if (prayerTimeMinutes <= currentTimeInMinutes) {
-            currentPrayer = prayerTimes[i].name;
-            currentPrayerTime = prayerTimes[i].time;
-          }
-          if (prayerTimeMinutes > currentTimeInMinutes && !nextPrayer) {
-            nextPrayer = prayerTimes[i].name;
-            nextPrayerTime = prayerTimes[i].time;
-          }
-        }
-        if (currentPrayer != null && !nextPrayer) {
-          currentPrayer = prayerTimes[prayerTimes.length - 1].name;
-          currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
-          nextPrayer = "Fajr";
-          nextPrayerTime = prayerTimes[0].time;
-        }
-        const formatPrayerTime = (time) => {
-          const [hour, minute] = time.split(':');
-          let formattedHour = parseInt(hour);
-          let formattedMinute = minute;
-          if (formattedHour > 12) {
-            formattedHour -= 12;
-          }
-          return `${formattedHour}:${formattedMinute}`;
-        };
-        if (currentPrayer != null) {
-          document.getElementById('current-prayer-name').textContent = currentPrayer;
-          document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
-          document.getElementById('prayer-name').textContent = nextPrayer;
-          document.getElementById('prayer-time').textContent = formatPrayerTime(nextPrayerTime);
-        }
         // Update the last fetch date
         lastFetchDate = currentDate;
+        // Update prayer info immediately
+        updatePrayerInfo();
       } catch (error) {
         console.error('Error fetching prayer times:', error);
       }
     }
+    // Update the current and next prayer info
+    function updatePrayerInfo() {
+      if (!prayerTimesData) return;
+      const now = new Date();
+      const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+      let currentPrayer = null;
+      let nextPrayer = null;
+      let currentPrayerTime = null;
+      let nextPrayerTime = null;
+      for (let i = 0; i < prayerTimesData.length; i++) {
+        const prayerTime = prayerTimesData[i].time.split(':');
+        const prayerTimeMinutes = parseInt(prayerTime[0]) * 60 + parseInt(prayerTime[1]);
+        if (prayerTimeMinutes <= currentTimeInMinutes) {
+          currentPrayer = prayerTimesData[i].name;
+          currentPrayerTime = prayerTimesData[i].time;
+          if (i <= prayerTimesData.length - 2) {
+            nextPrayer = prayerTimesData[i + 1].name;
+            nextPrayerTime = prayerTimesData[i + 1].time;
+          } else {
+            nextPrayer = prayerTimesData[0].name;
+            nextPrayerTime = prayerTimesData[0].time;
+          }
+        }
+      }
+      if (currentPrayer == null) {
+        currentPrayer = prayerTimesData[prayerTimesData.length - 1].name;
+        currentPrayerTime = prayerTimesData[prayerTimesData.length - 1].time;
+        nextPrayer = "Fajr";
+        nextPrayerTime = prayerTimesData[0].time;
+      }
+      const formatPrayerTime = (time) => {
+        const [hour, minute] = time.split(':');
+        let formattedHour = parseInt(hour);
+        let formattedMinute = minute;
+        if (formattedHour > 12) {
+          formattedHour -= 12;
+        }
+        return `${formattedHour}:${formattedMinute}`;
+      };
+      if (currentPrayer != null) {
+        document.getElementById('current-prayer-name').textContent = currentPrayer;
+        document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
+        document.getElementById('prayer-name').textContent = nextPrayer;
+        document.getElementById('prayer-time').textContent = formatPrayerTime(nextPrayerTime);
+      }
+    }
+    // Periodically update prayer info every x seconds
+    setInterval(updatePrayerInfo, 10000); // Update prayer info every 10 seconds
     // Call the getLocation function to get the user's location when the page loads
     window.onload = getLocation;
   </script>
