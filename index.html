@@ -109,8 +109,19 @@
             dateElement.textContent = formattedDate;
         }
 
-        setInterval(updateClock, 60000);  // update every minute to remove seconds
-        updateClock();  // initial call to show time immediately
+        // Set up the clock to update at the start of the next minute
+        function startClock() {
+            const now = new Date();
+            const msUntilNextMinute = (60 - now.getSeconds()) * 1000;
+
+            // Set the clock to update exactly when the next minute starts
+            setTimeout(function() {
+                updateClock(); // Update the clock immediately
+                setInterval(updateClock, 60000);  // Update every minute thereafter
+            }, msUntilNextMinute);
+        }
+
+        startClock();  // Start the clock
 
         // Fetch Prayer Times and Current Prayer Information
         async function fetchPrayerTimes() {
