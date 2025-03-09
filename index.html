@@ -75,13 +75,14 @@
 
   <script>
     let userLatitude, userLongitude;
+    let lastFetchDate = null; // Track the last date when prayer times were fetched
     // Get current location using Geolocation API
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
           userLatitude = position.coords.latitude;
           userLongitude = position.coords.longitude;
-          fetchPrayerTimes(); // Fetch prayer times after getting location
+          //fetchPrayerTimes(); // Fetch prayer times after getting location
         }, function(error) {
           console.error("Error getting geolocation: ", error);
         });
@@ -89,19 +90,12 @@
         alert("Geolocation is not supported by this browser.");
       }
     }
-    let lastSyncTime = new Date().getTime();
 
     function updateClock() {
       const clockElement = document.getElementById('clock');
       const dateElement = document.getElementById('date');
       const dayElement = document.getElementById('day');
       const now = new Date();
-      const currentTime = now.getTime();
-      const elapsedTime = currentTime - lastSyncTime;
-      // Every minute, adjust time based on the system clock to avoid drift
-      if (elapsedTime >= 60000) {
-        lastSyncTime = currentTime; // Sync the lastSyncTime with the system clock
-      }
       const hours = now.getHours();
       const minutes = now.getMinutes();
       const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -129,6 +123,7 @@
       const formattedDate = now.toLocaleDateString('en-US', optionsDate);
       dayElement.textContent = `${formattedDay} ${partOfDay}`;
       dateElement.textContent = formattedDate;
+      fetchPrayerTimes();
     }
 
     function startClock() {
@@ -142,13 +137,20 @@
         console.log('Waiting for location...');
         return; // Wait until we have location data
       }
+      // Get today's date
+      const currentDate = new Date().toLocaleDateString();
+      // Check if prayer times have been fetched today
+      if (lastFetchDate === currentDate) {
+        console.log("Prayer times already fetched today.");
+        return; // Prayer times have already been fetched for today
+      }
+      console.log("ok1")
+      // If it's a new day, fetch prayer times
       const method = 2; // Calculation method, change it according to your preferences
       const url = `https://api.aladhan.com/v1/timings?latitude=${userLatitude}&longitude=${userLongitude}&method=${method}`;
-      // console.log(userLatitude,userLongitude,  url)
       try {
         const response = await fetch(url);
         const data = await response.json();
-        // console.log(data.data.timings)
         const timings = data.data.timings;
         const prayerTimes = [{
             name: 'Fajr',
@@ -171,59 +173,54 @@
             time: timings.Isha
           },
         ];
-        // console.log(prayerTimes)
         // Find the current and next prayer time
         const now = new Date();
-        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
         let currentPrayer = null;
         let nextPrayer = null;
         let currentPrayerTime = null;
         let nextPrayerTime = null;
-        // Loop through prayer times to find the current and next prayer
         for (let i = 0; i < prayerTimes.length; i++) {
           const prayerTime = prayerTimes[i].time.split(':');
           const prayerTimeMinutes = parseInt(prayerTime[0]) * 60 + parseInt(prayerTime[1]);
-          if (prayerTimeMinutes > currentTime) {
+          if (prayerTimeMinutes > currentTimeInMinutes) {
             currentPrayer = prayerTimes[prayerTimes.length - 1].name;
             currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
             nextPrayer = prayerTimes[0].name;
             nextPrayerTime = prayerTimes[0].time;
-            break
-          } else if (prayerTimeMinutes <= currentTime) {
+            break;
+          } else if (prayerTimeMinutes <= currentTimeInMinutes) {
             currentPrayer = prayerTimes[i].name;
             currentPrayerTime = prayerTimes[i].time;
           }
-          if (prayerTimeMinutes > currentTime && !nextPrayer) {
+          if (prayerTimeMinutes > currentTimeInMinutes && !nextPrayer) {
             nextPrayer = prayerTimes[i].name;
             nextPrayerTime = prayerTimes[i].time;
           }
         }
-        // If no current prayer found (meaning it's after the last prayer), set it to the last prayer
-        if (currentPrayer != null && !nextPrayer && prayerTimes != null) {
+        if (currentPrayer != null && !nextPrayer) {
           currentPrayer = prayerTimes[prayerTimes.length - 1].name;
           currentPrayerTime = prayerTimes[prayerTimes.length - 1].time;
-          // Handle transition from Isha to Fajr
           nextPrayer = "Fajr";
           nextPrayerTime = prayerTimes[0].time;
         }
-        // Format prayer time to remove AM/PM and use 12-hour format without suffix
         const formatPrayerTime = (time) => {
           const [hour, minute] = time.split(':');
-          let formattedHour = parseInt(hour); // Remove leading zero if any
+          let formattedHour = parseInt(hour);
           let formattedMinute = minute;
-          // Ensure the hour is in 12-hour format (1 to 12)
           if (formattedHour > 12) {
             formattedHour -= 12;
           }
           return `${formattedHour}:${formattedMinute}`;
         };
-        // Display current and next prayer name and time on the same line
         if (currentPrayer != null) {
           document.getElementById('current-prayer-name').textContent = currentPrayer;
           document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
           document.getElementById('prayer-name').textContent = nextPrayer;
           document.getElementById('prayer-time').textContent = formatPrayerTime(nextPrayerTime);
         }
+        // Update the last fetch date
+        lastFetchDate = currentDate;
       } catch (error) {
         console.error('Error fetching prayer times:', error);
       }
