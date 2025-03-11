@@ -104,9 +104,7 @@
       const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
       // Determine the part of the day (morning, afternoon, evening)
       let partOfDay = '';
-      if (hours >= 0 && hours < 3) {
-        partOfDay = '';
-      } else if (hours >= 3 && hours < 12) {
+      if (hours >= 0 && hours < 12) {
         partOfDay = 'Morning';
       } else if (hours >= 12 && hours < 18) {
         partOfDay = 'Afternoon';
