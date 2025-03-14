@@ -32,28 +32,29 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 20px;
+      padding: 2vh; /* Use viewport height for padding */
     }
 
     .date {
-      font-size: 2em;
-      margin: 10px;
+      font-size: 8vw; /* Dynamic font size based on viewport width */
+      margin: 1vh;
     }
 
     .day-time {
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 2em;
+      font-size: 8vw; /* Dynamic font size based on viewport width */
       font-weight: normal;
+      flex-direction: column; /* Stack day and time vertically */
     }
 
     .day {
-      margin-right: 10px;
+      margin-bottom: 1vh; /* Space between day and time */
     }
 
     .time {
-      font-size: 1.5em;
+      font-size: 8vw; /* Dynamic font size based on viewport width */
       color: #EDE7D7;
     }
 
@@ -62,18 +63,18 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      margin: 20px;
-      font-size: 2em;
+      margin: 3vh;
+     
     }
 
     .current-prayer-name, .current-prayer-time {
-      margin: 0 0.2em;
+      margin: 0 0.5vw;
       color: #5d6360;
     }
 
     .next-prayer-name, .next-prayer-time {
       color: #267E7D;
-      margin: 0 0.2em;
+      margin: 0.5vw 0.5vw;
     }
 
     /* Portrait Mode Adjustments */
@@ -84,21 +85,22 @@
 
       .day-time {
         flex-direction: column;
-        font-size: 2em;
+        font-size: 8vw;
       }
 
       .prayer-info {
         flex-direction: column;
-        font-size: 2em;
+        font-size: 8vw;
       }
     }
 
     /* Landscape Mode Adjustments */
     @media screen and (orientation: landscape) {
       .day-time-box {
-        flex-direction: column; /* Stacks the day and time vertically */
+        flex-direction: column; /* Stacks day and time vertically */
         justify-content: center;
         align-items: center;
+        padding: 3vh; /* Adjust padding for better spacing */
       }
 
       .day-time {
@@ -106,7 +108,11 @@
       }
 
       .date {
-        margin-top: 10px; /* Ensures the date is below the time */
+        margin-top: 2vh; /* Reduce margin for closer spacing */
+      }
+
+      .prayer-info {
+        font-size: 6vw;
       }
     }
   </style>
