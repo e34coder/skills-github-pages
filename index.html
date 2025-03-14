@@ -21,51 +21,75 @@
       align-items: center;
       font-family: Arial, sans-serif;
       background-color: #000000;
-      /* Dark background */
       color: #f0f0f0;
-      /* Off white text color */
     }
 
-    .time {
-      font-size: 4em;
-      /* Much bigger font for the time */
-      margin-bottom: 10px;
-    }
-
-    .day {
-      font-size: 4.5em;
-      font-weight: normal;
-      margin-bottom: 10px;
+    .day-time-box {
+      border-bottom: 1px solid #797d7c;
+      padding: 20px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
 
     .date {
-      font-size: 2.5em;
-      font-weight: normal;
+      font-size: 3em;
+      margin: 20px;
+    }
+
+    .day-time {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3.5em;
       margin-bottom: 10px;
+      font-weight: normal;
+    }
+
+    .day {
+      font-weight: normal;
+      margin-right: 10px;
+    }
+
+    .time {
+      font-weight: normal;
     }
 
     .prayer-info {
       font-size: 3em;
       display: flex;
-      /* Align prayer name and time on the same line */
       justify-content: center;
       align-items: center;
+      margin: 30px;
     }
 
     .prayer-name,
     .prayer-time {
       margin: 0 0.2em;
-      /* Add space between the prayer name and time */
+      color: #5d6360;
+      /* Default green-blue */
+    }
+
+    /* Lighter blue-green for second prayer */
+    .next-prayer-name,
+    .next-prayer-time {
+      color: #088F8F;
+      /* Lighter blue-green */
     }
   </style>
 </head>
 
 <body>
-  <div class="day" id="day"></div>
-  <div class="time" id="clock"></div>
-  <div class="date" id="date"></div>
+  <div class="day-time-box">
+    <div class="day-time">
+      <div class="day" id="day"></div>
+      <div class="time" id="clock"></div>
+    </div>
+    <div class="date" id="date"></div>
+  </div>
 
-  <!-- Prayer Info Section on Same Line -->
   <div class="prayer-info">
     <p id="current-prayer-name" class="prayer-name"></p>
     <p id="current-prayer-time" class="prayer-time"></p>
@@ -102,7 +126,6 @@
       const ampm = hours >= 12 ? 'PM' : 'AM';
       const hour12 = hours % 12 || 12;
       const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
-      // Determine the part of the day (morning, afternoon, evening)
       let partOfDay = '';
       if (hours >= 0 && hours < 12) {
         partOfDay = 'Morning';
@@ -122,7 +145,7 @@
       };
       const formattedDay = now.toLocaleDateString('en-US', optionsDay);
       const formattedDate = now.toLocaleDateString('en-US', optionsDate);
-      dayElement.textContent = `${formattedDay} ${partOfDay}`;
+      dayElement.textContent = `${formattedDay} ${partOfDay}, `;
       dateElement.textContent = formattedDate;
     }
 
@@ -137,15 +160,12 @@
         console.log('Waiting for location...');
         return; // Wait until we have location data
       }
-      // Get today's date
       const currentDate = new Date().toLocaleDateString();
-      // Check if prayer times have been fetched today
       if (lastFetchDate === currentDate) {
         console.log("Prayer times already fetched today.");
         return; // Prayer times have already been fetched for today
       }
-      // If it's a new day, fetch prayer times
-      const method = 2; // Calculation method, change it according to your preferences
+      const method = 2; // Calculation method
       const url = `https://api.aladhan.com/v1/timings?latitude=${userLatitude}&longitude=${userLongitude}&method=${method}`;
       try {
         const response = await fetch(url);
@@ -170,17 +190,15 @@
           {
             name: 'Isha',
             time: timings.Isha
-          },
+          }
         ];
-        // Update the last fetch date
-        lastFetchDate = currentDate;
-        // Update prayer info immediately
-        updatePrayerInfo();
+        lastFetchDate = currentDate; // Update the last fetch date
+        updatePrayerInfo(); // Update prayer info immediately
       } catch (error) {
         console.error('Error fetching prayer times:', error);
       }
     }
-    // Update the current and next prayer info
+
     function updatePrayerInfo() {
       if (!prayerTimesData) return;
       const now = new Date();
@@ -219,15 +237,16 @@
         }
         return `${formattedHour}:${formattedMinute}`;
       };
-      if (currentPrayer != null) {
-        document.getElementById('current-prayer-name').textContent = currentPrayer;
-        document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
-        document.getElementById('prayer-name').textContent = nextPrayer;
-        document.getElementById('prayer-time').textContent = formatPrayerTime(nextPrayerTime);
-      }
+      document.getElementById('current-prayer-name').textContent = `${currentPrayer}`;
+      document.getElementById('current-prayer-time').textContent = `${formatPrayerTime(currentPrayerTime)},`;
+      // Set the next prayer name and time
+      document.getElementById('prayer-name').textContent = nextPrayer;
+      document.getElementById('prayer-time').textContent = formatPrayerTime(nextPrayerTime);
+      // Apply the lighter color to the next prayer
+      document.getElementById('prayer-name').classList.add('next-prayer-name');
+      document.getElementById('prayer-time').classList.add('next-prayer-time');
     }
-    // Periodically update prayer info every x seconds
-    setInterval(updatePrayerInfo, 10000); // Update prayer info every 10 seconds
+    setInterval(fetchPrayerTimes, 10000); // Update prayer info every 10 seconds
     // Call the getLocation function to get the user's location when the page loads
     window.onload = getLocation;
   </script>
