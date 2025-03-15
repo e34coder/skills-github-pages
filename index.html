@@ -33,7 +33,7 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 1vh;
+      padding: 2vh;
       /* Use viewport height for padding */
     }
 
@@ -70,6 +70,7 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
+      margin: 3vh;
     }
 
     .current-prayer-name,
@@ -90,29 +91,32 @@
         flex-direction: column;
       }
 
+      .day {
+        font-size: 10vw;
+        margin-bottom: 1vh;
+        /* Space between day and time */
+      }
+
+      .time {
+        font-size: 10vw;
+        /* Dynamic font size based on viewport width */
+        color: #EDE7D7;
+      }
+
       .day-time {
         flex-direction: column;
-        font-size: 8vw;
+        font-size: 10vw;
+      }
+
+      .date {
+        font-size: 11vw;
+        /* Dynamic font size based on viewport width */
+        margin: 1vh;
       }
 
       .prayer-info {
         flex-direction: column;
         font-size: 8vw;
-        margin: 2vw 0.5vw;
-      }
-
-      .current-prayer-name,
-      .current-prayer-time {
-        margin: 0 0.5vw 1vw;
-      }
-
-      .next-prayer-name,
-      .next-prayer-time {
-        margin: 0vw 0.5vw;
-      }
-
-      .prayer-time-break {
-        margin: 1vw;
       }
     }
 
@@ -123,7 +127,7 @@
         /* Stacks day and time vertically */
         justify-content: center;
         align-items: center;
-        padding: 0.5vh;
+        padding: 3vh;
         /* Adjust padding for better spacing */
       }
 
@@ -133,23 +137,12 @@
       }
 
       .date {
-        margin-top: 1vh;
+        margin-top: 2vh;
         /* Reduce margin for closer spacing */
       }
 
       .prayer-info {
-        margin: 1vw 0.5vw;
-        font-size: 7vw;
-      }
-
-      .current-prayer-name,
-      .current-prayer-time {
-        margin: 0 1vw;
-      }
-
-      .next-prayer-name,
-      .next-prayer-time {
-        margin: 0 1vw;
+        font-size: 6vw;
       }
     }
   </style>
@@ -167,7 +160,6 @@
   <div class="prayer-info">
     <p id="current-prayer-name" class="current-prayer-name"></p>
     <p id="current-prayer-time" class="current-prayer-time"></p>
-    <p id="prayer-time-break" class="prayer-time-break"></p>
     <p id="next-prayer-name" class="next-prayer-name"></p>
     <p id="next-prayer-time" class="next-prayer-time"></p>
   </div>
@@ -191,10 +183,6 @@
       }
     }
 
-    function am_pm(hours) {
-      return hours >= 12 ? 'pm' : 'am';
-    }
-
     function updateClock() {
       const clockElement = document.getElementById('clock');
       const dateElement = document.getElementById('date');
@@ -202,7 +190,7 @@
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      const ampm = am_pm(hours);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
       const hour12 = hours % 12 || 12;
       const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
       let partOfDay = hours < 12 ? 'Morning' : (hours < 18 ? 'Afternoon' : 'Evening');
@@ -224,14 +212,12 @@
       setInterval(updateClock, 10000);
     }
     startClock();
-    //Prayer Logic and update 
     async function fetchPrayerTimes() {
       if (!userLatitude || !userLongitude) {
         console.log('Waiting for location...');
         return;
       }
       const currentDate = new Date().toLocaleDateString();
-      updatePrayerInfo();
       if (lastFetchDate === currentDate) {
         console.log("Prayer times already fetched today.");
         return;
@@ -298,9 +284,8 @@
         const [hour, minute] = time.split(':');
         let formattedHour = parseInt(hour);
         let formattedMinute = minute;
-        const ampm = am_pm(formattedHour);
         if (formattedHour > 12) formattedHour -= 12;
-        return `${formattedHour}:${formattedMinute} ${ampm}`;
+        return `${formattedHour}:${formattedMinute}`;
       };
       document.getElementById('current-prayer-name').textContent = currentPrayer;
       document.getElementById('current-prayer-time').textContent = `${formatPrayerTime(currentPrayerTime)},`;
