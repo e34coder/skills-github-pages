@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock and Date</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body, html {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+      color: #C7C8C8;
+      text-align: center;
+    }
+
+    .day-time-box {
+      border-bottom: 1px solid #797d7c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1vh;
+    }
+
+    .prayer-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .current-prayer-name, .current-prayer-time { color: #5d6360; margin: 0 0.5vw; }
+    .next-prayer-name, .next-prayer-time { color: #267E7D; margin: 0 0.5vw; }
+  </style>
+</head>
+
+<body>
+
+  <div class="day-time-box">
+    <div class="day" id="day"></div>
+    <div class="time" id="clock"></div>
+    <div class="date" id="date"></div>
+  </div>
+
+  <div class="prayer-info">
+    <p id="current-prayer-name"></p>
+    <p id="current-prayer-time"></p>
+    <p id="next-prayer-name"></p>
+    <p id="next-prayer-time"></p>
+  </div>
+
+  <!-- 🔊 Sound -->
+  <audio id="reminderSound">
+    <source src="https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+/* ---------------- CLOCK ---------------- */
+function am_pm(h){ return h >= 12 ? 'pm' : 'am'; }
+
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const hour12 = h % 12 || 12;
+  document.getElementById("clock").textContent =
+    `${hour12}:${m.toString().padStart(2,'0')} ${am_pm(h)}`;
+
+  document.getElementById("day").textContent =
+    now.toLocaleDateString('en-US', { weekday:'long' });
+
+  document.getElementById("date").textContent =
+    now.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+
+  checkMedicineReminder(now);
+}
+
+setInterval(updateClock, 10000);
+updateClock();
+
+/* ---------------- MEDICINE REMINDER ---------------- */
+const playedToday = {
+  morning: false,
+  noon: false,
+  evening: false,
+  date: new Date().toDateString()
+};
+
+function resetIfNewDay() {
+  const today = new Date().toDateString();
+  if (playedToday.date !== today) {
+    playedToday.morning = playedToday.noon = playedToday.evening = false;
+    playedToday.date = today;
+  }
+}
+
+function playBeepThreeTimes(callback) {
+  const audio = document.getElementById("reminderSound");
+  let count = 0;
+
+  function playNext() {
+    audio.currentTime = 0;
+    audio.play();
+    audio.onended = () => {
+      count++;
+      if (count < 3) playNext();
+      else if (callback) callback();
+    };
+  }
+  playNext();
+}
+
+function speakMedicine(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const female = voices.find(v =>
+    v.name.toLowerCase().includes("zira") ||
+    v.name.toLowerCase().includes("samantha") ||
+    v.name.toLowerCase().includes("female")
+  );
+  if (female) msg.voice = female;
+  msg.rate = 0.95;
+  msg.pitch = 1.1;
+  speechSynthesis.speak(msg);
+}
+
+function checkMedicineReminder(now) {
+  resetIfNewDay();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const day = now.toLocaleDateString('en-US',{weekday:'long'});
+
+  if (h === 6 && m === 0 && !playedToday.morning) {
+    playedToday.morning = true;
+    playBeepThreeTimes(() =>
+      speakMedicine(`Medicine time, ${day} morning.`)
+    );
+  }
+
+  if (h === 12 && m === 0 && !playedToday.noon) {
+    playedToday.noon = true;
+    playBeepThreeTimes(() =>
+      speakMedicine(`Medicine time, ${day} noon.`)
+    );
+  }
+
+  if (h === 18 && m === 0 && !playedToday.evening) {
+    playedToday.evening = true;
+    playBeepThreeTimes(() =>
+      speakMedicine(`Medicine time, ${day} evening.`)
+    );
+  }
+}
+</script>
+
+</body>
+</html>
