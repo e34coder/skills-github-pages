@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Clock, Date, and Prayer Times with Medicine Reminder</title>
   <style>
     * {
@@ -15,57 +15,241 @@
     body,
     html {
       height: 100%;
+      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       background-color: #000000;
       color: #C7C8C8;
       text-align: center;
+      padding: 20px;
     }
 
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    /* Clock and Date Section */
     .day-time-box {
-      border-bottom: 1px solid #797d7c;
+      width: 100%;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 1vh;
+      justify-content: center;
+      gap: 15px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid #797d7c;
     }
 
+    .day-date-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .day {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: #FFFFFF;
+    }
+
+    .date {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 300;
+      color: #C7C8C8;
+    }
+
+    .time {
+      font-size: clamp(3.5rem, 10vw, 6rem);
+      font-weight: 400;
+      color: #FFFFFF;
+      letter-spacing: 3px;
+      margin: 10px 0;
+    }
+
+    /* Prayer Times Section */
     .prayer-info {
+      width: 100%;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      gap: 25px;
+      padding: 20px;
     }
 
-    .current-prayer-name,
-    .current-prayer-time {
-      color: #797d7c;
-      margin: 0 0.5vw;
+    .prayer-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      width: 100%;
     }
 
-    .next-prayer-name,
-    .next-prayer-time {
+    .prayer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 200px;
+      padding: 15px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: rgba(50, 50, 50, 0.1);
+    }
+
+    .prayer-label {
+      font-size: clamp(1.5rem, 3vw, 2rem);
       color: #797d7c;
-      margin: 0 0.5vw;
+      font-weight: 300;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .prayer-name {
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
+      color: #FFFFFF;
+      font-weight: 400;
+    }
+
+    .prayer-time {
+      font-size: clamp(2rem, 4.5vw, 2.5rem);
+      color: #C7C8C8;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    .separator {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: #797d7c;
+      margin: 0 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        gap: 30px;
+      }
+      
+      .day-time-box {
+        gap: 10px;
+        padding-bottom: 20px;
+      }
+      
+      .prayer-row {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .prayer-section {
+        min-width: 90%;
+        padding: 12px;
+      }
+      
+      .separator {
+        display: none;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 600px) {
+      .container {
+        flex-direction: row;
+        gap: 40px;
+      }
+      
+      .day-time-box {
+        width: 50%;
+        border-bottom: none;
+        border-right: 2px solid #797d7c;
+        padding-right: 40px;
+        padding-bottom: 0;
+      }
+      
+      .prayer-info {
+        width: 50%;
+        padding-left: 40px;
+      }
+      
+      .prayer-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .prayer-row {
+        flex-direction: row;
+        gap: 40px;
+      }
+      
+      .prayer-section {
+        min-width: 250px;
+        padding: 20px;
+      }
+    }
+
+    /* Tablet specific adjustments */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .day {
+        font-size: 3.5rem;
+      }
+      
+      .date {
+        font-size: 2.2rem;
+      }
+      
+      .time {
+        font-size: 4.5rem;
+      }
+      
+      .prayer-section {
+        min-width: 250px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="day-time-box">
-    <div class="day" id="day"></div>
-    <div class="time" id="clock"></div>
-    <div class="date" id="date"></div>
-  </div>
+  <div class="container">
+    <div class="day-time-box">
+      <div class="day-date-container">
+        <div class="day" id="day"></div>
+        <div class="date" id="date"></div>
+      </div>
+      <div class="time" id="clock"></div>
+    </div>
 
-  <div class="prayer-info">
-    <p id="current-prayer-name"></p>
-    <p id="current-prayer-time"></p> ||
-    <p id="next-prayer-name"></p>
-    <p id="next-prayer-time"></p>
+    <div class="prayer-info">
+      <div class="prayer-row">
+        <div class="prayer-section">
+          <div class="prayer-label">Current</div>
+          <div class="prayer-name" id="current-prayer-name"></div>
+          <div class="prayer-time" id="current-prayer-time"></div>
+        </div>
+        
+        <div class="separator">||</div>
+        
+        <div class="prayer-section">
+          <div class="prayer-label">Next</div>
+          <div class="prayer-name" id="next-prayer-name"></div>
+          <div class="prayer-time" id="next-prayer-time"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 🔊 Sound -->
@@ -98,9 +282,17 @@
           fetchPrayerTimes();
         }, function (error) {
           console.error("Error getting geolocation: ", error);
+          // Default to a location if geolocation fails (e.g., Makkah)
+          userLatitude = 21.4225;
+          userLongitude = 39.8262;
+          fetchPrayerTimes();
         });
       } else {
         alert("Geolocation is not supported by this browser.");
+        // Default to a location
+        userLatitude = 21.4225;
+        userLongitude = 39.8262;
+        fetchPrayerTimes();
       }
     }
 
@@ -168,16 +360,25 @@
         nextPrayerTime = prayerTimesData[0].time;
       }
 
+      // Format time to 12-hour format with AM/PM
+      function formatPrayerTime(timeStr) {
+        const [hours, minutes] = timeStr.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minutes} ${ampm}`;
+      }
+
       document.getElementById('current-prayer-name').textContent = currentPrayer;
-      document.getElementById('current-prayer-time').textContent = currentPrayerTime;
+      document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
       document.getElementById('next-prayer-name').textContent = nextPrayer;
-      document.getElementById('next-prayer-time').textContent = nextPrayerTime;
+      document.getElementById('next-prayer-time').textContent = formatPrayerTime(nextPrayerTime);
     }
 
     // ------------------------ Clock ------------------------
 
     function am_pm(h) {
-      return h >= 12 ? 'pm' : 'am';
+      return h >= 12 ? 'PM' : 'AM';
     }
 
     function updateClock() {
