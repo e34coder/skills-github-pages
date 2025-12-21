@@ -4,11 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clock and Date</title>
+  <title>Clock, Date, and Prayer Times with Medicine Reminder</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    body, html {
+    body,
+    html {
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -34,8 +39,17 @@
       align-items: center;
     }
 
-    .current-prayer-name, .current-prayer-time { color: #5d6360; margin: 0 0.5vw; }
-    .next-prayer-name, .next-prayer-time { color: #267E7D; margin: 0 0.5vw; }
+    .current-prayer-name,
+    .current-prayer-time {
+      color: #797d7c;
+      margin: 0 0.5vw;
+    }
+
+    .next-prayer-name,
+    .next-prayer-time {
+      color: #797d7c;
+      margin: 0 0.5vw;
+    }
   </style>
 </head>
 
@@ -49,7 +63,7 @@
 
   <div class="prayer-info">
     <p id="current-prayer-name"></p>
-    <p id="current-prayer-time"></p>
+    <p id="current-prayer-time"></p> ||
     <p id="next-prayer-name"></p>
     <p id="next-prayer-time"></p>
   </div>
@@ -59,104 +73,208 @@
     <source src="https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3" type="audio/mpeg">
   </audio>
 
-<script>
-/* ---------------- CLOCK ---------------- */
-function am_pm(h){ return h >= 12 ? 'pm' : 'am'; }
+  <script>
+    // ------------------------ Geolocation and Prayer Time Fetch ------------------------
 
-function updateClock() {
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const hour12 = h % 12 || 12;
-  document.getElementById("clock").textContent =
-    `${hour12}:${m.toString().padStart(2,'0')} ${am_pm(h)}`;
+    // Add a variable to store location data
+    let userLatitude, userLongitude;
+    let prayerTimesData = null;
+    let lastFetchDate = null;
 
-  document.getElementById("day").textContent =
-    now.toLocaleDateString('en-US', { weekday:'long' });
-
-  document.getElementById("date").textContent =
-    now.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-
-  checkMedicineReminder(now);
-}
-
-setInterval(updateClock, 10000);
-updateClock();
-
-/* ---------------- MEDICINE REMINDER ---------------- */
-let playedToday = { // Initialize here to avoid access before initialization
-  morning: false,
-  noon: false,
-  evening: false,
-  date: new Date().toDateString()
-};
-
-function resetIfNewDay() {
-  const today = new Date().toDateString();
-  if (playedToday.date !== today) {
-    playedToday.morning = playedToday.noon = playedToday.evening = false;
-    playedToday.date = today;
-  }
-}
-
-function playBeepThreeTimes(callback) {
-  const audio = document.getElementById("reminderSound");
-  let count = 0;
-
-  function playNext() {
-    audio.currentTime = 0;
-    audio.play();
-    audio.onended = () => {
-      count++;
-      if (count < 3) playNext();
-      else if (callback) callback();
+    // ------------------------ MEDICINE REMINDER VARIABLES ------------------------
+    const playedToday = {
+      morning: false,
+      noon: false,
+      evening: false,
+      date: new Date().toDateString()
     };
-  }
-  playNext();
-}
 
-function speakMedicine(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  const voices = speechSynthesis.getVoices();
-  const female = voices.find(v =>
-    v.name.toLowerCase().includes("zira") ||
-    v.name.toLowerCase().includes("samantha") ||
-    v.name.toLowerCase().includes("female")
-  );
-  if (female) msg.voice = female;
-  msg.rate = 0.95;
-  msg.pitch = 1.1;
-  speechSynthesis.speak(msg);
-}
+    // Function to get user location
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          userLatitude = position.coords.latitude;
+          userLongitude = position.coords.longitude;
+          fetchPrayerTimes();
+        }, function (error) {
+          console.error("Error getting geolocation: ", error);
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
 
-function checkMedicineReminder(now) {
-  resetIfNewDay();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const day = now.toLocaleDateString('en-US',{weekday:'long'});
+    // Fetch prayer times from the API
+    async function fetchPrayerTimes() {
+      if (!userLatitude || !userLongitude) {
+        console.log('Waiting for location...');
+        return;
+      }
 
-  if (h === 6 && m === 0 && !playedToday.morning) {
-    playedToday.morning = true;
-    playBeepThreeTimes(() =>
-      speakMedicine(`Medicine time, ${day} morning.`)
-    );
-  }
+      const currentDate = new Date().toLocaleDateString();
+      if (lastFetchDate === currentDate) {
+        console.log("Prayer times already fetched today.");
+        return;
+      }
 
-  if (h === 12 && m === 0 && !playedToday.noon) {
-    playedToday.noon = true;
-    playBeepThreeTimes(() =>
-      speakMedicine(`Medicine time, ${day} noon.`)
-    );
-  }
+      const method = 2; // Adjust this to the calculation method you want
+      const url = `https://api.aladhan.com/v1/timings?latitude=${userLatitude}&longitude=${userLongitude}&method=${method}`;
 
-  if (h === 18 && m === 0 && !playedToday.evening) {
-    playedToday.evening = true;
-    playBeepThreeTimes(() =>
-      speakMedicine(`Medicine time, ${day} evening.`)
-    );
-  }
-}
-</script>
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const timings = data.data.timings;
+
+        prayerTimesData = [
+          { name: 'Fajr', time: timings.Fajr },
+          { name: 'Dhuhr', time: timings.Dhuhr },
+          { name: 'Asr', time: timings.Asr },
+          { name: 'Maghrib', time: timings.Maghrib },
+          { name: 'Isha', time: timings.Isha }
+        ];
+        lastFetchDate = currentDate;
+        updatePrayerInfo();
+      } catch (error) {
+        console.error('Error fetching prayer times:', error);
+      }
+    }
+
+    // Function to update the prayer info
+    function updatePrayerInfo() {
+      if (!prayerTimesData) return;
+
+      const now = new Date();
+      const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+
+      let currentPrayer = null, nextPrayer = null;
+      let currentPrayerTime = null, nextPrayerTime = null;
+
+      for (let i = 0; i < prayerTimesData.length; i++) {
+        const prayerTime = prayerTimesData[i].time.split(':');
+        const prayerTimeMinutes = parseInt(prayerTime[0]) * 60 + parseInt(prayerTime[1]);
+
+        if (prayerTimeMinutes <= currentTimeInMinutes) {
+          currentPrayer = prayerTimesData[i].name;
+          currentPrayerTime = prayerTimesData[i].time;
+          nextPrayer = (i < prayerTimesData.length - 1) ? prayerTimesData[i + 1].name : prayerTimesData[0].name;
+          nextPrayerTime = (i < prayerTimesData.length - 1) ? prayerTimesData[i + 1].time : prayerTimesData[0].time;
+        }
+      }
+
+      if (!currentPrayer) {
+        currentPrayer = prayerTimesData[prayerTimesData.length - 1].name;
+        currentPrayerTime = prayerTimesData[prayerTimesData.length - 1].time;
+        nextPrayer = "Fajr";
+        nextPrayerTime = prayerTimesData[0].time;
+      }
+
+      document.getElementById('current-prayer-name').textContent = currentPrayer;
+      document.getElementById('current-prayer-time').textContent = currentPrayerTime;
+      document.getElementById('next-prayer-name').textContent = nextPrayer;
+      document.getElementById('next-prayer-time').textContent = nextPrayerTime;
+    }
+
+    // ------------------------ Clock ------------------------
+
+    function am_pm(h) {
+      return h >= 12 ? 'pm' : 'am';
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const hour12 = h % 12 || 12;
+      document.getElementById("clock").textContent =
+        `${hour12}:${m.toString().padStart(2, '0')} ${am_pm(h)}`;
+
+      document.getElementById("day").textContent =
+        now.toLocaleDateString('en-US', { weekday: 'long' });
+
+      document.getElementById("date").textContent =
+        now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+      checkMedicineReminder(now);
+    }
+
+    setInterval(updateClock, 10000);
+    updateClock();
+
+    // ------------------------ MEDICINE REMINDER ------------------------
+
+    function resetIfNewDay() {
+      const today = new Date().toDateString();
+      if (playedToday.date !== today) {
+        playedToday.morning = playedToday.noon = playedToday.evening = false;
+        playedToday.date = today;
+      }
+    }
+
+    function playBeepThreeTimes(callback) {
+      const audio = document.getElementById("reminderSound");
+      let count = 0;
+
+      function playNext() {
+        audio.currentTime = 0;
+        audio.play();
+        audio.onended = () => {
+          count++;
+          if (count < 3) playNext();
+          else if (callback) callback();
+        };
+      }
+      playNext();
+    }
+
+    function speakMedicine(text) {
+      const msg = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      const female = voices.find(v =>
+        v.name.toLowerCase().includes("zira") ||
+        v.name.toLowerCase().includes("samantha") ||
+        v.name.toLowerCase().includes("female")
+      );
+      if (female) msg.voice = female;
+      msg.rate = 0.95;
+      msg.pitch = 1.1;
+      speechSynthesis.speak(msg);
+    }
+
+    function checkMedicineReminder(now) {
+      resetIfNewDay();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const day = now.toLocaleDateString('en-US', { weekday: 'long' });
+
+      if (h === 6 && m === 0 && !playedToday.morning) {
+        playedToday.morning = true;
+        playBeepThreeTimes(() =>
+          speakMedicine(`Medicine time, ${day} morning.`)
+        );
+      }
+
+      if (h === 12 && m === 0 && !playedToday.noon) {
+        playedToday.noon = true;
+        playBeepThreeTimes(() =>
+          speakMedicine(`Medicine time, ${day} noon.`)
+        );
+      }
+
+      if (h === 18 && m === 0 && !playedToday.evening) {
+        playedToday.evening = true;
+        playBeepThreeTimes(() =>
+          speakMedicine(`Medicine time, ${day} evening.`)
+        );
+      }
+    }
+
+    // Initialize location and prayer times
+    getLocation();
+    // Fetch prayer times initially and then every hour
+    setInterval(fetchPrayerTimes, 3600000); // 3600000 ms = 1 hour
+
+  </script>
 
 </body>
+
 </html>
