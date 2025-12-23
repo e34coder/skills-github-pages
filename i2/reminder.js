@@ -56,18 +56,27 @@ function resetIfNewDay() {
   }
 }
 
-// FIXED: Play beep three times with proper timing
+// FIXED FOR MOBILE: Play beep three times with mobile-friendly audio handling
 function playBeepThreeTimes() {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     const audio = document.getElementById("reminderSound");
     let count = 0;
     
-    // Reset audio
+    // Reset audio and ensure it's ready
     audio.pause();
     audio.currentTime = 0;
     
+    // On mobile, we need to load the audio first
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // For mobile, we'll use a simpler approach with timeouts
+      // since audio playback can be restricted
+      await new Promise(r => setTimeout(r, 100));
+    }
+    
     // Function to play a single beep
-    function playBeep() {
+    async function playSingleBeep() {
       return new Promise((beepResolve) => {
         audio.currentTime = 0;
         
@@ -79,12 +88,13 @@ function playBeepThreeTimes() {
             console.log(`Beep ${count + 1} started`);
           }).catch(error => {
             console.warn(`Beep ${count + 1} failed:`, error);
-            // Continue even if audio fails
+            // If play fails, wait and continue
             setTimeout(beepResolve, 500);
+            return;
           });
         }
         
-        // When audio ends naturally
+        // Set up ended event
         const onEnded = () => {
           audio.removeEventListener('ended', onEnded);
           console.log(`Beep ${count + 1} ended`);
@@ -97,34 +107,33 @@ function playBeepThreeTimes() {
         setTimeout(() => {
           audio.removeEventListener('ended', onEnded);
           beepResolve();
-        }, 1000);
+        }, 800);
       });
     }
     
-    // Play three beeps in sequence
-    async function playSequence() {
-      for (let i = 0; i < 3; i++) {
-        count = i;
-        await playBeep();
-        // Add small pause between beeps (except after last one)
-        if (i < 2) {
-          await new Promise(r => setTimeout(r, 200));
-        }
+    // Play three beeps in sequence with proper timing
+    for (let i = 0; i < 3; i++) {
+      count = i;
+      await playSingleBeep();
+      
+      // Add a pause between beeps (except after the last one)
+      if (i < 2) {
+        await new Promise(r => setTimeout(r, 300));
       }
-      console.log('All beeps finished');
-      resolve();
     }
     
-    // Start the sequence
-    playSequence();
+    console.log('All beeps finished');
+    resolve();
   });
 }
 
-// FIXED FOR IPHONE: Speech synthesis with proper iOS handling
+// FIXED FOR MOBILE: Speech synthesis with better mobile handling
 function speakMedicine(text) {
   return new Promise((resolve) => {
     // Cancel any ongoing speech
-    speechSynthesis.cancel();
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
     
     // Check if speech synthesis is available
     if (!('speechSynthesis' in window)) {
@@ -133,40 +142,31 @@ function speakMedicine(text) {
       return;
     }
     
-    // On iOS, we need to handle speech differently
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Detect if we're on mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    if (isIOS) {
-      // iOS workaround: create and remove an iframe to trigger user interaction
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-      
-      // Wait for iframe to load
+    // For mobile, we need to ensure we have user interaction context
+    if (isMobile) {
+      // Small delay to ensure audio context is ready
       setTimeout(() => {
-        document.body.removeChild(iframe);
-        
-        // Now try to speak
-        setTimeout(() => {
-          speakWithRetry(text, resolve);
-        }, 100);
-      }, 100);
+        performSpeech(text, resolve);
+      }, 500);
     } else {
-      // Non-iOS devices
+      // Desktop can proceed immediately
       setTimeout(() => {
-        speakWithRetry(text, resolve);
+        performSpeech(text, resolve);
       }, 100);
     }
   });
 }
 
-// Helper function to speak with retry logic
-function speakWithRetry(text, resolve, retryCount = 0) {
+// Helper function to perform the actual speech
+function performSpeech(text, resolve, retryCount = 0) {
   const msg = new SpeechSynthesisUtterance(text);
   
   // Set properties
   msg.volume = 1;
-  msg.rate = 0.9;
+  msg.rate = 0.85; // Slightly slower for clarity
   msg.pitch = 1;
   msg.lang = 'en-US';
   
@@ -177,41 +177,38 @@ function speakWithRetry(text, resolve, retryCount = 0) {
     // Try to find a good English voice
     const englishVoices = voices.filter(v => v.lang.startsWith('en'));
     if (englishVoices.length > 0) {
-      // Prefer female voices for medicine reminders
-      const femaleVoice = englishVoices.find(v => 
-        v.name.toLowerCase().includes('female') || 
-        v.name.toLowerCase().includes('samantha') ||
-        v.name.toLowerCase().includes('zira')
+      // Prefer voices that work well on mobile
+      const preferredVoice = englishVoices.find(v => 
+        v.name.includes('Google') || 
+        v.name.includes('Samantha') ||
+        v.name.includes('Alex') ||
+        v.name.includes('Karen')
       );
-      msg.voice = femaleVoice || englishVoices[0];
+      msg.voice = preferredVoice || englishVoices[0];
     }
   }
   
   // Add event listeners
   msg.onstart = () => {
     console.log('Speech started:', text);
-    // Vibrate on mobile if supported
-    if ('vibrate' in navigator) {
-      navigator.vibrate(100);
-    }
   };
   
   msg.onend = () => {
-    console.log('Speech ended');
+    console.log('Speech ended successfully');
     resolve();
   };
   
   msg.onerror = (event) => {
     console.error('Speech error:', event.error);
     
-    // Retry logic for iOS
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS && retryCount < 2) {
+    // Retry logic (max 2 retries)
+    if (retryCount < 2) {
       console.log(`Retrying speech (attempt ${retryCount + 1})...`);
       setTimeout(() => {
-        speakWithRetry(text, resolve, retryCount + 1);
+        performSpeech(text, resolve, retryCount + 1);
       }, 500);
     } else {
+      console.log('Max retries reached, giving up');
       resolve();
     }
   };
@@ -221,12 +218,23 @@ function speakWithRetry(text, resolve, retryCount = 0) {
     speechSynthesis.speak(msg);
   } catch (error) {
     console.error('Error starting speech:', error);
-    resolve();
+    
+    // If speech fails immediately, retry once
+    if (retryCount === 0) {
+      setTimeout(() => {
+        performSpeech(text, resolve, retryCount + 1);
+      }, 500);
+    } else {
+      resolve();
+    }
   }
   
-  // Safety timeout
+  // Safety timeout (10 seconds)
   setTimeout(() => {
-    speechSynthesis.cancel();
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      console.log('Speech cancelled due to timeout');
+    }
     resolve();
   }, 10000);
 }
