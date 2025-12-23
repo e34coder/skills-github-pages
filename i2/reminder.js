@@ -1,5 +1,5 @@
 // ------------------------ CACHE FOR OFFLINE USE ------------------------
-const CACHE_NAME = 'medicine-reminder-cache-v2';
+const CACHE_NAME = 'medicine-reminder-cache-v3';
 const urlsToCache = [
   'https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3',
   'i2/sounds/medicine_time.mp3',
@@ -86,65 +86,102 @@ function resetIfNewDay() {
   }
 }
 
-// Play beep three times
+// Mobile-friendly beep playback using different audio elements
 function playBeepThreeTimes() {
-  return new Promise(async (resolve) => {
-    const audio = document.getElementById("reminderSound");
-    let count = 0;
+  return new Promise((resolve) => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let completedBeeps = 0;
     
-    // Reset audio and ensure it's ready
-    audio.pause();
-    audio.currentTime = 0;
-    
-    // Function to play a single beep
-    async function playSingleBeep() {
-      return new Promise((beepResolve) => {
+    if (isMobile) {
+      // For mobile: Use 3 separate audio elements to avoid reuse issues
+      console.log('Mobile: Using separate audio elements for beeps');
+      
+      function playBeep(beepNumber) {
+        return new Promise((beepResolve) => {
+          const audioId = `reminderSound${beepNumber}`;
+          const audio = document.getElementById(audioId);
+          
+          if (!audio) {
+            console.error(`Audio element ${audioId} not found`);
+            beepResolve();
+            return;
+          }
+          
+          // Reset audio
+          audio.pause();
+          audio.currentTime = 0;
+          audio.volume = 1.0;
+          
+          // Small delay between beeps
+          setTimeout(() => {
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                console.log(`Beep ${beepNumber} started`);
+              }).catch(error => {
+                console.warn(`Beep ${beepNumber} failed:`, error);
+                beepResolve();
+              });
+            }
+            
+            // Set timeout for beep completion
+            setTimeout(() => {
+              audio.pause();
+              audio.currentTime = 0;
+              console.log(`Beep ${beepNumber} completed`);
+              beepResolve();
+            }, 700);
+          }, beepNumber === 1 ? 0 : 800);
+        });
+      }
+      
+      // Play beeps sequentially
+      async function playSequence() {
+        await playBeep(1);
+        await playBeep(2);
+        await playBeep(3);
+        console.log('All mobile beeps finished');
+        resolve();
+      }
+      
+      playSequence();
+    } else {
+      // For desktop: Use single audio element with loop
+      console.log('Desktop: Using single audio element for beeps');
+      const audio = document.getElementById("reminderSound1");
+      let count = 0;
+      
+      function playBeep() {
         audio.currentTime = 0;
+        audio.volume = 1.0;
         
-        // Create a new play promise for each beep
         const playPromise = audio.play();
         
         if (playPromise !== undefined) {
           playPromise.then(() => {
-            console.log(`Beep ${count + 1} started`);
+            console.log(`Desktop beep ${count + 1} started`);
           }).catch(error => {
-            console.warn(`Beep ${count + 1} failed:`, error);
-            // If play fails, wait and continue
-            setTimeout(beepResolve, 500);
-            return;
+            console.warn(`Desktop beep ${count + 1} failed:`, error);
+            count++;
+            if (count < 3) setTimeout(playBeep, 800);
+            else resolve();
           });
         }
         
-        // Set up ended event
-        const onEnded = () => {
-          audio.removeEventListener('ended', onEnded);
-          console.log(`Beep ${count + 1} ended`);
-          beepResolve();
+        audio.onended = () => {
+          count++;
+          if (count < 3) {
+            setTimeout(playBeep, 300);
+          } else {
+            console.log('All desktop beeps finished');
+            resolve();
+          }
         };
-        
-        audio.addEventListener('ended', onEnded);
-        
-        // Safety timeout in case 'ended' event doesn't fire
-        setTimeout(() => {
-          audio.removeEventListener('ended', onEnded);
-          beepResolve();
-        }, 800);
-      });
-    }
-    
-    // Play three beeps in sequence with proper timing
-    for (let i = 0; i < 3; i++) {
-      count = i;
-      await playSingleBeep();
-      
-      // Add a pause between beeps (except after the last one)
-      if (i < 2) {
-        await new Promise(r => setTimeout(r, 300));
       }
+      
+      playBeep();
     }
-    
-    console.log('All beeps finished');
-    resolve();
   });
 }
 
@@ -188,31 +225,39 @@ function playDaySound(day) {
       return;
     }
     
+    // Reset and prepare audio
+    dayAudio.pause();
     dayAudio.currentTime = 0;
     dayAudio.volume = 1.0;
     
-    const playPromise = dayAudio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        console.log(`Playing day sound: ${day}`);
-      }).catch(error => {
-        console.warn(`Failed to play day sound for ${day}:`, error);
-        setTimeout(resolve, 1000);
-      });
-    }
-    
-    dayAudio.onended = () => {
-      console.log(`Day sound finished: ${day}`);
-      resolve();
-    };
-    
-    // Safety timeout
+    // Small delay to ensure audio context is ready
     setTimeout(() => {
-      dayAudio.pause();
-      dayAudio.currentTime = 0;
-      resolve();
-    }, 5000);
+      const playPromise = dayAudio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`Playing day sound: ${day}`);
+        }).catch(error => {
+          console.warn(`Failed to play day sound for ${day}:`, error);
+          setTimeout(resolve, 1000);
+        });
+      }
+      
+      // Set up ended event
+      dayAudio.onended = () => {
+        console.log(`Day sound finished: ${day}`);
+        resolve();
+      };
+      
+      // Safety timeout
+      setTimeout(() => {
+        if (!dayAudio.paused) {
+          dayAudio.pause();
+          dayAudio.currentTime = 0;
+        }
+        resolve();
+      }, 5000);
+    }, 100);
   });
 }
 
@@ -244,31 +289,39 @@ function playTimeOfDaySound(timeOfDay) {
       return;
     }
     
+    // Reset and prepare audio
+    timeAudio.pause();
     timeAudio.currentTime = 0;
     timeAudio.volume = 1.0;
     
-    const playPromise = timeAudio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        console.log(`Playing time sound: ${timeOfDay}`);
-      }).catch(error => {
-        console.warn(`Failed to play time sound for ${timeOfDay}:`, error);
-        setTimeout(resolve, 1000);
-      });
-    }
-    
-    timeAudio.onended = () => {
-      console.log(`Time sound finished: ${timeOfDay}`);
-      resolve();
-    };
-    
-    // Safety timeout
+    // Small delay to ensure audio context is ready
     setTimeout(() => {
-      timeAudio.pause();
-      timeAudio.currentTime = 0;
-      resolve();
-    }, 5000);
+      const playPromise = timeAudio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`Playing time sound: ${timeOfDay}`);
+        }).catch(error => {
+          console.warn(`Failed to play time sound for ${timeOfDay}:`, error);
+          setTimeout(resolve, 1000);
+        });
+      }
+      
+      // Set up ended event
+      timeAudio.onended = () => {
+        console.log(`Time sound finished: ${timeOfDay}`);
+        resolve();
+      };
+      
+      // Safety timeout
+      setTimeout(() => {
+        if (!timeAudio.paused) {
+          timeAudio.pause();
+          timeAudio.currentTime = 0;
+        }
+        resolve();
+      }, 5000);
+    }, 100);
   });
 }
 
@@ -282,59 +335,69 @@ function playMedicineTime() {
       return;
     }
     
+    // Reset and prepare audio
+    medicineAudio.pause();
     medicineAudio.currentTime = 0;
     medicineAudio.volume = 1.0;
     
-    const playPromise = medicineAudio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        console.log('Playing medicine time announcement');
-      }).catch(error => {
-        console.warn('Failed to play medicine time:', error);
-        setTimeout(resolve, 1000);
-      });
-    }
-    
-    medicineAudio.onended = () => {
-      console.log('Medicine time announcement finished');
-      resolve();
-    };
-    
-    // Safety timeout
+    // Small delay to ensure audio context is ready
     setTimeout(() => {
-      medicineAudio.pause();
-      medicineAudio.currentTime = 0;
-      resolve();
-    }, 5000);
+      const playPromise = medicineAudio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Playing medicine time announcement');
+        }).catch(error => {
+          console.warn('Failed to play medicine time:', error);
+          setTimeout(resolve, 1000);
+        });
+      }
+      
+      // Set up ended event
+      medicineAudio.onended = () => {
+        console.log('Medicine time announcement finished');
+        resolve();
+      };
+      
+      // Safety timeout
+      setTimeout(() => {
+        if (!medicineAudio.paused) {
+          medicineAudio.pause();
+          medicineAudio.currentTime = 0;
+        }
+        resolve();
+      }, 5000);
+    }, 100);
   });
 }
 
 // Play complete medicine reminder sequence
 async function playMedicineReminder(day, timeOfDay) {
   try {
+    console.log(`Starting medicine reminder for ${day} ${timeOfDay}`);
+    
     // Play beeps first
     await playBeepThreeTimes();
     
     // Small pause
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 500));
     
     // Play medicine time announcement
     await playMedicineTime();
     
     // Small pause
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 500));
     
     // Play day of week
     await playDaySound(day);
     
     // Small pause
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 500));
     
     // Play time of day
     await playTimeOfDaySound(timeOfDay);
     
-    console.log('Complete medicine reminder played');
+    console.log('Complete medicine reminder played successfully');
   } catch (error) {
     console.error('Error playing medicine reminder:', error);
   }
