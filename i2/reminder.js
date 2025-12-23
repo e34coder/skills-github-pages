@@ -1,5 +1,5 @@
 // ------------------------ CACHE FOR OFFLINE USE ------------------------
-const CACHE_NAME = 'medicine-reminder-cache-v4';
+const CACHE_NAME = 'medicine-reminder-cache-v5';
 const urlsToCache = [
   'https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3',
   'i2/sounds/medicine_time.mp3',
@@ -77,25 +77,142 @@ function resetIfNewDay() {
   }
 }
 
+// Enhanced audio playback with detailed debugging
+function playAudioWithDebug(audioId, debugName) {
+  return new Promise((resolve) => {
+    const audio = document.getElementById(audioId);
+    if (!audio) {
+      console.error(`Audio element "${audioId}" not found for: ${debugName}`);
+      resolve();
+      return;
+    }
+    
+    console.log(`Preparing to play: ${debugName} (${audioId})`);
+    
+    // Reset audio completely
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = 1.0;
+    
+    // Check if audio is actually loaded
+    if (audio.readyState < 2) { // HAVE_CURRENT_DATA or less
+      console.warn(`Audio not loaded for ${debugName}, loading now...`);
+      audio.load();
+    }
+    
+    // Small delay for stability
+    setTimeout(() => {
+      console.log(`Attempting to play: ${debugName}`);
+      
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`✅ Successfully started playing: ${debugName}`);
+        }).catch(error => {
+          console.error(`❌ Failed to play ${debugName}:`, error);
+          console.error(`Error details:`, {
+            name: error.name,
+            message: error.message,
+            audioId: audioId,
+            readyState: audio.readyState,
+            networkState: audio.networkState,
+            error: audio.error
+          });
+          
+          // Try alternative approach for iOS
+          if (error.name === 'NotAllowedError') {
+            console.log(`Attempting iOS workaround for ${debugName}`);
+            attemptIOSWorkaround(audio, debugName, resolve);
+          } else {
+            setTimeout(resolve, 1000);
+          }
+        });
+      }
+      
+      // Set up ended event
+      const onEnded = () => {
+        audio.removeEventListener('ended', onEnded);
+        console.log(`✅ Finished playing: ${debugName}`);
+        resolve();
+      };
+      
+      audio.addEventListener('ended', onEnded);
+      
+      // Safety timeout
+      setTimeout(() => {
+        audio.removeEventListener('ended', onEnded);
+        if (!audio.paused) {
+          console.log(`⏱️ Timeout for: ${debugName}, forcing stop`);
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        resolve();
+      }, 8000); // 8 second timeout for longer audio files
+    }, 300); // Longer initial delay
+  });
+}
+
+// iOS workaround for audio playback issues
+function attemptIOSWorkaround(audio, debugName, resolve) {
+  console.log(`Trying iOS workaround for ${debugName}`);
+  
+  // Create a new audio element dynamically
+  const newAudio = new Audio();
+  newAudio.src = audio.querySelector('source').src;
+  newAudio.volume = 1.0;
+  newAudio.preload = 'auto';
+  
+  // Try to play after a user gesture simulation
+  setTimeout(() => {
+    const playPromise = newAudio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log(`✅ iOS workaround successful for: ${debugName}`);
+        
+        newAudio.onended = () => {
+          console.log(`✅ iOS workaround finished: ${debugName}`);
+          newAudio.remove();
+          resolve();
+        };
+        
+        // Safety timeout
+        setTimeout(() => {
+          newAudio.pause();
+          newAudio.remove();
+          resolve();
+        }, 8000);
+        
+      }).catch(error => {
+        console.error(`❌ iOS workaround failed for ${debugName}:`, error);
+        newAudio.remove();
+        setTimeout(resolve, 1000);
+      });
+    } else {
+      newAudio.remove();
+      setTimeout(resolve, 1000);
+    }
+  }, 500);
+}
+
 // iOS-compatible beep playback
 function playBeepThreeTimes() {
   return new Promise((resolve) => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     
     if (isIOS) {
-      // iOS-specific implementation
-      playIOSBeeps(resolve);
+      console.log('iOS: Playing beeps with enhanced method');
+      playEnhancedIOSBeeps(resolve);
     } else {
-      // Standard implementation for other devices
+      console.log('Non-iOS: Playing beeps');
       playStandardBeeps(resolve);
     }
   });
 }
 
-// iOS-specific beep implementation
-function playIOSBeeps(resolve) {
-  console.log('iOS: Playing beeps with iOS-compatible method');
-  
+// Enhanced iOS beep implementation
+function playEnhancedIOSBeeps(resolve) {
   const audio = document.getElementById("reminderSound");
   if (!audio) {
     console.error('Beep audio element not found');
@@ -106,48 +223,55 @@ function playIOSBeeps(resolve) {
   let beepCount = 0;
   const maxBeeps = 3;
   
-  // iOS requires special handling for audio playback
   function playSingleBeep() {
-    // Reset audio for iOS
+    // Complete reset for iOS
     audio.pause();
     audio.currentTime = 0;
     audio.volume = 1.0;
     
-    // Small delay for iOS
+    // Force reload for iOS
+    if (audio.readyState < 2) {
+      audio.load();
+    }
+    
+    // Longer delay for iOS stability
     setTimeout(() => {
+      console.log(`Playing iOS beep ${beepCount + 1}/${maxBeeps}`);
+      
       const playPromise = audio.play();
       
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          console.log(`iOS beep ${beepCount + 1} started`);
+          console.log(`✅ iOS beep ${beepCount + 1} started`);
         }).catch(error => {
-          console.warn(`iOS beep ${beepCount + 1} failed:`, error);
-          // Continue to next beep even if this one fails
+          console.warn(`⚠️ iOS beep ${beepCount + 1} failed:`, error);
           beepCount++;
           if (beepCount < maxBeeps) {
-            setTimeout(playSingleBeep, 800);
+            setTimeout(playSingleBeep, 1000);
           } else {
-            console.log('iOS beeps finished (with possible errors)');
+            console.log('✅ All iOS beeps attempted');
             resolve();
           }
         });
       }
       
-      // iOS often doesn't fire 'ended' event reliably, so use timeout
+      // iOS timeout-based playback (more reliable than ended event)
       setTimeout(() => {
         audio.pause();
         audio.currentTime = 0;
         beepCount++;
         
+        console.log(`✅ iOS beep ${beepCount}/${maxBeeps} completed`);
+        
         if (beepCount < maxBeeps) {
           // Wait before playing next beep
-          setTimeout(playSingleBeep, 500);
+          setTimeout(playSingleBeep, 700);
         } else {
-          console.log('iOS beeps finished');
+          console.log('✅ All iOS beeps finished');
           resolve();
         }
-      }, 600); // Beep duration
-    }, 100);
+      }, 650); // Slightly longer than beep duration
+    }, 200);
   }
   
   playSingleBeep();
@@ -155,8 +279,6 @@ function playIOSBeeps(resolve) {
 
 // Standard beep implementation for non-iOS devices
 function playStandardBeeps(resolve) {
-  console.log('Non-iOS: Playing beeps');
-  
   const audio = document.getElementById("reminderSound");
   if (!audio) {
     console.error('Beep audio element not found');
@@ -171,16 +293,18 @@ function playStandardBeeps(resolve) {
     audio.currentTime = 0;
     audio.volume = 1.0;
     
+    console.log(`Playing beep ${beepCount + 1}/${maxBeeps}`);
+    
     const playPromise = audio.play();
     
     if (playPromise !== undefined) {
       playPromise.then(() => {
-        console.log(`Beep ${beepCount + 1} started`);
+        console.log(`✅ Beep ${beepCount + 1} started`);
       }).catch(error => {
-        console.warn(`Beep ${beepCount + 1} failed:`, error);
+        console.warn(`⚠️ Beep ${beepCount + 1} failed:`, error);
         beepCount++;
         if (beepCount < maxBeeps) {
-          setTimeout(playSingleBeep, 800);
+          setTimeout(playSingleBeep, 1000);
         } else {
           resolve();
         }
@@ -189,10 +313,12 @@ function playStandardBeeps(resolve) {
     
     audio.onended = () => {
       beepCount++;
+      console.log(`✅ Beep ${beepCount}/${maxBeeps} completed`);
+      
       if (beepCount < maxBeeps) {
-        setTimeout(playSingleBeep, 300);
+        setTimeout(playSingleBeep, 400);
       } else {
-        console.log('All beeps finished');
+        console.log('✅ All beeps finished');
         resolve();
       }
     };
@@ -204,8 +330,10 @@ function playStandardBeeps(resolve) {
         audio.currentTime = 0;
       }
       beepCount++;
+      console.log(`⏱️ Beep ${beepCount}/${maxBeeps} timeout`);
+      
       if (beepCount < maxBeeps) {
-        setTimeout(playSingleBeep, 300);
+        setTimeout(playSingleBeep, 400);
       } else {
         resolve();
       }
@@ -213,55 +341,6 @@ function playStandardBeeps(resolve) {
   }
   
   playSingleBeep();
-}
-
-// Play audio with iOS compatibility
-function playAudioElement(audioId) {
-  return new Promise((resolve) => {
-    const audio = document.getElementById(audioId);
-    if (!audio) {
-      console.error(`Audio element not found: ${audioId}`);
-      resolve();
-      return;
-    }
-    
-    // Reset audio
-    audio.pause();
-    audio.currentTime = 0;
-    audio.volume = 1.0;
-    
-    // Small delay for iOS
-    setTimeout(() => {
-      const playPromise = audio.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          console.log(`Playing: ${audioId}`);
-        }).catch(error => {
-          console.warn(`Failed to play ${audioId}:`, error);
-          setTimeout(resolve, 1000);
-        });
-      }
-      
-      // Set up ended event
-      const onEnded = () => {
-        audio.removeEventListener('ended', onEnded);
-        console.log(`Finished: ${audioId}`);
-        resolve();
-      };
-      
-      audio.addEventListener('ended', onEnded);
-      
-      // Safety timeout (especially important for iOS)
-      setTimeout(() => {
-        audio.removeEventListener('ended', onEnded);
-        audio.pause();
-        audio.currentTime = 0;
-        console.log(`Timeout: ${audioId}`);
-        resolve();
-      }, 5000);
-    }, 100);
-  });
 }
 
 // Play day sound based on day of week
@@ -295,7 +374,7 @@ function playDaySound(day) {
       return Promise.resolve();
   }
   
-  return playAudioElement(daySoundId);
+  return playAudioWithDebug(daySoundId, `Day: ${day}`);
 }
 
 // Play time of day sound (morning/noon/evening)
@@ -317,43 +396,54 @@ function playTimeOfDaySound(timeOfDay) {
       return Promise.resolve();
   }
   
-  return playAudioElement(timeSoundId);
+  return playAudioWithDebug(timeSoundId, `Time: ${timeOfDay}`);
 }
 
 // Play medicine time announcement
 function playMedicineTime() {
-  return playAudioElement("medicineTimeSound");
+  return playAudioWithDebug("medicineTimeSound", "Medicine Time");
 }
 
-// Play complete medicine reminder sequence
+// Play complete medicine reminder sequence with detailed logging
 async function playMedicineReminder(day, timeOfDay) {
   try {
-    console.log(`Starting medicine reminder for ${day} ${timeOfDay}`);
+    console.log(`🎬 STARTING MEDICINE REMINDER for ${day} ${timeOfDay}`);
     
-    // Play beeps first
+    // Step 1: Play beeps
+    console.log('🔊 Step 1: Playing 3 beeps...');
     await playBeepThreeTimes();
     
-    // Longer pause for iOS
-    await new Promise(r => setTimeout(r, 800));
+    // Longer pause for iOS after beeps
+    console.log('⏸️ Pausing after beeps...');
+    await new Promise(r => setTimeout(r, 1000));
     
-    // Play medicine time announcement
+    // Step 2: Play medicine time announcement
+    console.log('🔊 Step 2: Playing "Medicine Time"...');
     await playMedicineTime();
     
     // Pause
-    await new Promise(r => setTimeout(r, 800));
+    console.log('⏸️ Pausing after medicine time...');
+    await new Promise(r => setTimeout(r, 1000));
     
-    // Play day of week
+    // Step 3: Play day of week
+    console.log(`🔊 Step 3: Playing day (${day})...`);
     await playDaySound(day);
     
     // Pause
-    await new Promise(r => setTimeout(r, 800));
+    console.log('⏸️ Pausing after day...');
+    await new Promise(r => setTimeout(r, 1000));
     
-    // Play time of day
+    // Step 4: Play time of day
+    console.log(`🔊 Step 4: Playing time (${timeOfDay})...`);
     await playTimeOfDaySound(timeOfDay);
     
-    console.log('Complete medicine reminder played successfully');
+    console.log('✅ COMPLETE MEDICINE REMINDER PLAYED SUCCESSFULLY');
+    
   } catch (error) {
-    console.error('Error playing medicine reminder:', error);
+    console.error('❌ ERROR in medicine reminder:', error);
+    
+    // Try to continue with other parts even if one fails
+    console.log('🔄 Attempting to continue with remaining audio...');
   }
 }
 
@@ -365,19 +455,28 @@ function checkMedicineReminder(now) {
 
   if (h === 6 && m === 0 && !playedToday.morning) {
     playedToday.morning = true;
-    console.log('Playing morning reminder...');
+    console.log('⏰ Playing morning reminder...');
     playMedicineReminder(day, 'morning');
   }
 
   if (h === 12 && m === 0 && !playedToday.noon) {
     playedToday.noon = true;
-    console.log('Playing noon reminder...');
+    console.log('⏰ Playing noon reminder...');
     playMedicineReminder(day, 'noon');
   }
 
   if (h === 18 && m === 0 && !playedToday.evening) {
     playedToday.evening = true;
-    console.log('Playing evening reminder...');
+    console.log('⏰ Playing evening reminder...');
     playMedicineReminder(day, 'evening');
   }
 }
+
+// Export functions for testing
+window.debugAudio = {
+  playMedicineTime: playMedicineTime,
+  playDaySound: playDaySound,
+  playTimeOfDaySound: playTimeOfDaySound,
+  playBeepThreeTimes: playBeepThreeTimes,
+  playMedicineReminder: playMedicineReminder
+};
