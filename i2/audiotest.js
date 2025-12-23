@@ -3,8 +3,6 @@
 // Global variables
 let autoHideTimeout = null;
 let isTesting = false;
-let audioContextUnlocked = false;
-let lastTestTime = 0;
 
 // Initialize test audio button
 function initTestAudioButton() {
@@ -46,49 +44,32 @@ function showTestButton() {
 
 // Handle test audio button click
 async function handleTestAudio() {
-  // Prevent rapid clicking
-  const now = Date.now();
-  if (isTesting || (now - lastTestTime < 3000)) {
-    console.log('Test already in progress or too soon since last test');
-    return;
-  }
+  if (isTesting) return;
   
-  lastTestTime = now;
   isTesting = true;
-  
-  // Show loading state on button
-  const testAudioBtn = document.getElementById('testAudioBtn');
-  const originalText = testAudioBtn.innerHTML;
-  testAudioBtn.innerHTML = '⏳';
-  testAudioBtn.disabled = true;
-  
   try {
-    const currentDate = new Date();
-    const day = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
-    const timeOfDay = getTestTimeOfDay(currentDate);
+    const now = new Date();
+    const day = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const timeOfDay = getTestTimeOfDay(now);
     
-    console.log(`Starting test reminder for ${day} ${timeOfDay}`);
+    console.log('Starting test reminder...');
     
-    // Ensure all audio elements are ready
+    // Reset all audio elements
     resetAllAudioElements();
     
-    // Add a small delay to ensure audio context is ready
+    // Add a delay for stability
     await new Promise(r => setTimeout(r, 100));
     
     // Play complete test sequence
     await playMedicineReminder(day, timeOfDay);
     
-    console.log('Test reminder completed successfully');
+    console.log('Test reminder completed');
     
   } catch (error) {
     console.error('Test audio failed:', error);
     alert('Audio test failed. Please check your device volume and permissions.');
   } finally {
-    // Restore button state
-    testAudioBtn.innerHTML = originalText;
-    testAudioBtn.disabled = false;
     isTesting = false;
-    
     // Re-hide button after testing
     setTimeout(() => {
       const testAudioBtn = document.getElementById('testAudioBtn');
@@ -115,6 +96,16 @@ function resetAllAudioElements() {
     audio.pause();
     audio.currentTime = 0;
     audio.volume = 1.0;
+    
+    // Force reload for iOS devices
+    if (isOlderIOSDevice() && audio.readyState < 2) {
+      audio.load();
+    }
   });
-  console.log('All audio elements reset');
+  
+  // Clear any ongoing timeouts
+  if (autoHideTimeout) {
+    clearTimeout(autoHideTimeout);
+    autoHideTimeout = null;
+  }
 }
