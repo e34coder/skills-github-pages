@@ -3,6 +3,7 @@
 // Global variables
 let autoHideTimeout = null;
 let isTesting = false;
+let audioContextUnlocked = false;
 
 // Initialize test audio button
 function initTestAudioButton() {
@@ -17,6 +18,42 @@ function initTestAudioButton() {
   document.addEventListener('click', showTestButton);
   document.addEventListener('touchstart', showTestButton);
   testAudioBtn.addEventListener('click', handleTestAudio);
+  
+  // On mobile, we need to unlock audio context on first interaction
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    // Create a one-time unlock function
+    const unlockAudio = () => {
+      if (!audioContextUnlocked) {
+        console.log('Unlocking audio context for mobile...');
+        
+        // Play and immediately pause to unlock audio
+        const audio = document.getElementById("reminderSound");
+        audio.volume = 0.01;
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audioContextUnlocked = true;
+            console.log('Audio context unlocked');
+          }).catch(e => {
+            console.warn('Audio unlock failed:', e);
+          });
+        }
+        
+        // Remove the event listeners after first unlock attempt
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+      }
+    };
+    
+    // Try to unlock on first interaction
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+  }
   
   console.log('Test audio button initialized');
 }
@@ -53,8 +90,15 @@ async function handleTestAudio() {
     
     console.log('Starting audio test...');
     
+    // Ensure audio is ready
+    const audio = document.getElementById("reminderSound");
+    audio.volume = 1.0;
+    
     // Play beeps three times
     await playBeepThreeTimes();
+    
+    // Small delay before speech
+    await new Promise(r => setTimeout(r, 300));
     
     // Speak the reminder
     console.log('Playing voice reminder...');
