@@ -1,0 +1,3 @@
+for voice => https://elevenlabs.io/
+
+for loading => https://e34coder.github.io/skills-github-pages/i2.html
