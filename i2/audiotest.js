@@ -29,19 +29,22 @@ function initTestAudioButton() {
         console.log('Unlocking audio context for mobile...');
         
         // Play and immediately pause to unlock audio
-        const audio = document.getElementById("reminderSound");
-        audio.volume = 0.01;
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            audioContextUnlocked = true;
-            console.log('Audio context unlocked');
-          }).catch(e => {
-            console.warn('Audio unlock failed:', e);
-          });
+        const audioElements = document.querySelectorAll('audio');
+        if (audioElements.length > 0) {
+          const audio = audioElements[0];
+          audio.volume = 0.01;
+          const playPromise = audio.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              audio.pause();
+              audio.currentTime = 0;
+              audioContextUnlocked = true;
+              console.log('Audio context unlocked');
+            }).catch(e => {
+              console.warn('Audio unlock failed:', e);
+            });
+          }
         }
         
         // Remove the event listeners after first unlock attempt
@@ -79,7 +82,7 @@ function showTestButton() {
   }, 10000);
 }
 
-// Handle test audio button click
+// Handle test audio button click - plays test sequence
 async function handleTestAudio() {
   if (isTesting) return;
   
@@ -90,19 +93,34 @@ async function handleTestAudio() {
     
     console.log('Starting audio test...');
     
-    // Ensure audio is ready
-    const audio = document.getElementById("reminderSound");
-    audio.volume = 1.0;
+    // Ensure all audio is ready
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach(audio => {
+      audio.volume = 1.0;
+    });
     
-    // Play beeps three times
+    // Play test sequence (similar to actual reminder but shorter)
     await playBeepThreeTimes();
     
-    // Small delay before speech
+    // Small pause
     await new Promise(r => setTimeout(r, 300));
     
-    // Speak the reminder
-    console.log('Playing voice reminder...');
-    await speakMedicine(`Test reminder, ${day} test time. This is a test of the medicine reminder system.`);
+    // Play medicine time announcement
+    await playMedicineTime();
+    
+    // Small pause
+    await new Promise(r => setTimeout(r, 300));
+    
+    // Play day of week
+    await playDaySound(day);
+    
+    // Small pause
+    await new Promise(r => setTimeout(r, 300));
+    
+    // Play "test" using noon sound as placeholder
+    await playTimeOfDaySound('noon');
+    
+    console.log('Test reminder completed');
     
   } catch (error) {
     console.error('Test audio failed:', error);
