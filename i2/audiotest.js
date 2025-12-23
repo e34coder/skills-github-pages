@@ -19,61 +19,87 @@ function initTestAudioButton() {
   document.addEventListener('touchstart', showTestButton);
   testAudioBtn.addEventListener('click', handleTestAudio);
   
-  // iOS-specific audio unlock
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  if (isIOS) {
-    console.log('iOS device detected, setting up audio unlock');
-    setupIOSAudioUnlock();
-  }
-  
   console.log('Test audio button initialized');
+  
+  // Add debug buttons for testing individual sounds
+  addDebugButtons();
 }
 
-// iOS audio unlock setup
-function setupIOSAudioUnlock() {
-  // Create a hidden button that user can tap to unlock audio
-  const unlockButton = document.createElement('button');
-  unlockButton.style.cssText = 'position:fixed;top:10px;left:10px;padding:10px;background:#ff4444;color:white;border:none;border-radius:5px;z-index:9999;display:none;';
-  unlockButton.textContent = '🔊 Tap to Enable Audio';
-  unlockButton.id = 'iosAudioUnlock';
-  document.body.appendChild(unlockButton);
+// Add debug buttons for testing individual sounds
+function addDebugButtons() {
+  const debugDiv = document.createElement('div');
+  debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:rgba(0,0,0,0.8);color:white;padding:10px;border-radius:5px;z-index:9999;font-size:12px;display:none;';
+  debugDiv.id = 'debugPanel';
+  debugDiv.innerHTML = `
+    <div style="margin-bottom:5px;font-weight:bold;">Debug Audio:</div>
+    <button onclick="window.debugAudio.playMedicineTime()" style="margin:2px;padding:5px;font-size:10px;">Medicine Time</button>
+    <button onclick="window.debugAudio.playBeepThreeTimes()" style="margin:2px;padding:5px;font-size:10px;">3 Beeps</button>
+    <div style="margin-top:5px;">
+      <button onclick="testIndividualSound('sundaySound', 'Sunday')" style="margin:2px;padding:5px;font-size:10px;">Sunday</button>
+      <button onclick="testIndividualSound('morningSound', 'Morning')" style="margin:2px;padding:5px;font-size:10px;">Morning</button>
+    </div>
+  `;
+  document.body.appendChild(debugDiv);
   
-  // Show unlock button on first interaction
-  const showUnlock = () => {
-    unlockButton.style.display = 'block';
-    document.removeEventListener('click', showUnlock);
-    document.removeEventListener('touchstart', showUnlock);
-  };
+  // Show/hide debug panel with triple tap
+  let tapCount = 0;
+  let lastTap = 0;
   
-  document.addEventListener('click', showUnlock);
-  document.addEventListener('touchstart', showUnlock);
-  
-  // Unlock audio when button is tapped
-  unlockButton.addEventListener('click', () => {
-    console.log('iOS audio unlock triggered');
+  document.addEventListener('click', (e) => {
+    const now = Date.now();
+    if (now - lastTap > 1000) tapCount = 0;
     
-    // Try to play a silent audio to unlock audio context
-    const audioElements = document.querySelectorAll('audio');
-    if (audioElements.length > 0) {
-      const audio = audioElements[0];
-      audio.volume = 0.01;
-      const playPromise = audio.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.volume = 1.0;
-          console.log('iOS audio context unlocked');
-          unlockButton.style.display = 'none';
-          alert('Audio enabled! You can now test the reminder.');
-        }).catch(e => {
-          console.warn('iOS audio unlock failed:', e);
-          alert('Audio permission denied. Please allow audio in Safari settings.');
-        });
-      }
+    tapCount++;
+    lastTap = now;
+    
+    if (tapCount === 3) {
+      debugDiv.style.display = debugDiv.style.display === 'none' ? 'block' : 'none';
+      tapCount = 0;
     }
   });
+}
+
+// Test individual sound
+function testIndividualSound(audioId, soundName) {
+  console.log(`Testing individual sound: ${soundName} (${audioId})`);
+  
+  const audio = document.getElementById(audioId);
+  if (!audio) {
+    console.error(`Audio element ${audioId} not found`);
+    alert(`Audio element ${audioId} not found`);
+    return;
+  }
+  
+  audio.pause();
+  audio.currentTime = 0;
+  audio.volume = 1.0;
+  
+  // Check if audio has source
+  const source = audio.querySelector('source');
+  if (!source || !source.src) {
+    console.error(`No source found for ${audioId}`);
+    alert(`No audio source found for ${soundName}`);
+    return;
+  }
+  
+  console.log(`Audio source: ${source.src}`);
+  console.log(`Audio readyState: ${audio.readyState}`);
+  console.log(`Audio networkState: ${audio.networkState}`);
+  
+  // Try to play
+  setTimeout(() => {
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log(`✅ Successfully playing: ${soundName}`);
+        alert(`Now playing: ${soundName}`);
+      }).catch(error => {
+        console.error(`❌ Failed to play ${soundName}:`, error);
+        alert(`Failed to play ${soundName}: ${error.message}`);
+      });
+    }
+  }, 100);
 }
 
 // Show button after interaction
@@ -101,7 +127,7 @@ function showTestButton() {
 async function handleTestAudio() {
   // Prevent rapid clicking
   const now = Date.now();
-  if (isTesting || (now - lastTestTime < 4000)) {
+  if (isTesting || (now - lastTestTime < 5000)) {
     console.log('Test already in progress or too soon since last test');
     return;
   }
@@ -120,29 +146,28 @@ async function handleTestAudio() {
     const day = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
     const timeOfDay = getTestTimeOfDay(currentDate);
     
-    console.log(`Starting test reminder for ${day} ${timeOfDay}`);
+    console.log(`🎬 STARTING TEST REMINDER for ${day} ${timeOfDay}`);
     
     // Reset all audio elements
     resetAllAudioElements();
     
-    // Add a delay for iOS
-    await new Promise(r => setTimeout(r, 200));
+    // Pre-check audio files
+    await preCheckAudioFiles();
+    
+    // Add a delay for stability
+    await new Promise(r => setTimeout(r, 500));
     
     // Play complete test sequence
     await playMedicineReminder(day, timeOfDay);
     
-    console.log('Test reminder completed successfully');
+    console.log('✅ TEST REMINDER COMPLETED');
     
   } catch (error) {
-    console.error('Test audio failed:', error);
+    console.error('❌ TEST AUDIO FAILED:', error);
     
-    // iOS-specific error message
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS) {
-      alert('Audio test failed on iOS. Please tap the red "Tap to Enable Audio" button in the top-left corner first, then try again.');
-    } else {
-      alert('Audio test failed. Please check your device volume and permissions.');
-    }
+    // Provide helpful error message
+    const errorMsg = `Audio test failed: ${error.message}. Check console for details.`;
+    alert(errorMsg);
   } finally {
     // Restore button state
     testAudioBtn.innerHTML = originalText;
@@ -160,6 +185,41 @@ async function handleTestAudio() {
   }
 }
 
+// Pre-check audio files
+async function preCheckAudioFiles() {
+  console.log('🔍 Pre-checking audio files...');
+  
+  const audioElements = document.querySelectorAll('audio');
+  const issues = [];
+  
+  for (const audio of audioElements) {
+    const source = audio.querySelector('source');
+    if (!source || !source.src) {
+      issues.push(`No source for: ${audio.id}`);
+      continue;
+    }
+    
+    console.log(`Checking: ${audio.id} -> ${source.src}`);
+    console.log(`  Ready state: ${audio.readyState}`);
+    console.log(`  Network state: ${audio.networkState}`);
+    
+    if (audio.error) {
+      issues.push(`Error in ${audio.id}: ${audio.error.message}`);
+    }
+    
+    if (audio.readyState < 2) {
+      console.log(`  ⚠️ ${audio.id} not fully loaded, loading now...`);
+      audio.load();
+    }
+  }
+  
+  if (issues.length > 0) {
+    console.warn('Audio pre-check issues:', issues);
+  } else {
+    console.log('✅ All audio files pre-checked OK');
+  }
+}
+
 // Determine which time of day sound to use for test based on current time
 function getTestTimeOfDay(date) {
   const hour = date.getHours();
@@ -170,11 +230,14 @@ function getTestTimeOfDay(date) {
 
 // Reset all audio elements to ensure clean state
 function resetAllAudioElements() {
+  console.log('🔄 Resetting all audio elements...');
+  
   const audioElements = document.querySelectorAll('audio');
   audioElements.forEach(audio => {
     audio.pause();
     audio.currentTime = 0;
     audio.volume = 1.0;
   });
-  console.log('All audio elements reset');
+  
+  console.log('✅ All audio elements reset');
 }
