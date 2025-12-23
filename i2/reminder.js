@@ -65,8 +65,12 @@ async function getAudioFromCache(url) {
 function preloadAllAudio() {
   const audioElements = document.querySelectorAll('audio');
   audioElements.forEach(audio => {
-    audio.load();
-    console.log(`Preloaded: ${audio.querySelector('source').src}`);
+    try {
+      audio.load();
+      console.log(`Preloaded: ${audio.querySelector('source').src}`);
+    } catch (error) {
+      console.warn(`Failed to preload audio:`, error);
+    }
   });
 }
 
@@ -86,103 +90,137 @@ function resetIfNewDay() {
   }
 }
 
-// Mobile-friendly beep playback using different audio elements
+// Get audio element with fallback
+function getBeepAudioElement(index) {
+  const audioId = `reminderSound${index}`;
+  const audio = document.getElementById(audioId);
+  
+  // If specific audio element doesn't exist, fall back to first one
+  if (!audio && index > 1) {
+    console.warn(`Audio element ${audioId} not found, falling back to reminderSound1`);
+    return document.getElementById("reminderSound1");
+  }
+  
+  return audio;
+}
+
+// Mobile-friendly beep playback
 function playBeepThreeTimes() {
   return new Promise((resolve) => {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    let completedBeeps = 0;
     
     if (isMobile) {
-      // For mobile: Use 3 separate audio elements to avoid reuse issues
-      console.log('Mobile: Using separate audio elements for beeps');
-      
-      function playBeep(beepNumber) {
-        return new Promise((beepResolve) => {
-          const audioId = `reminderSound${beepNumber}`;
-          const audio = document.getElementById(audioId);
-          
-          if (!audio) {
-            console.error(`Audio element ${audioId} not found`);
-            beepResolve();
-            return;
-          }
-          
-          // Reset audio
-          audio.pause();
-          audio.currentTime = 0;
-          audio.volume = 1.0;
-          
-          // Small delay between beeps
-          setTimeout(() => {
-            const playPromise = audio.play();
-            
-            if (playPromise !== undefined) {
-              playPromise.then(() => {
-                console.log(`Beep ${beepNumber} started`);
-              }).catch(error => {
-                console.warn(`Beep ${beepNumber} failed:`, error);
-                beepResolve();
-              });
-            }
-            
-            // Set timeout for beep completion
-            setTimeout(() => {
-              audio.pause();
-              audio.currentTime = 0;
-              console.log(`Beep ${beepNumber} completed`);
-              beepResolve();
-            }, 700);
-          }, beepNumber === 1 ? 0 : 800);
-        });
-      }
-      
-      // Play beeps sequentially
-      async function playSequence() {
-        await playBeep(1);
-        await playBeep(2);
-        await playBeep(3);
-        console.log('All mobile beeps finished');
-        resolve();
-      }
-      
-      playSequence();
+      // For mobile: Use separate audio elements or fallback to single element
+      console.log('Mobile: Playing beeps');
+      playMobileBeeps(resolve);
     } else {
-      // For desktop: Use single audio element with loop
-      console.log('Desktop: Using single audio element for beeps');
-      const audio = document.getElementById("reminderSound1");
-      let count = 0;
+      // For desktop
+      console.log('Desktop: Playing beeps');
+      playDesktopBeeps(resolve);
+    }
+  });
+}
+
+// Mobile beep implementation
+function playMobileBeeps(resolve) {
+  let completedBeeps = 0;
+  
+  function playBeep(beepNumber) {
+    return new Promise((beepResolve) => {
+      const audio = getBeepAudioElement(beepNumber);
       
-      function playBeep() {
-        audio.currentTime = 0;
-        audio.volume = 1.0;
-        
+      if (!audio) {
+        console.error(`No audio element found for beep ${beepNumber}`);
+        beepResolve();
+        return;
+      }
+      
+      // Reset audio
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1.0;
+      
+      // Small delay between beeps
+      setTimeout(() => {
         const playPromise = audio.play();
         
         if (playPromise !== undefined) {
           playPromise.then(() => {
-            console.log(`Desktop beep ${count + 1} started`);
+            console.log(`Beep ${beepNumber} started`);
           }).catch(error => {
-            console.warn(`Desktop beep ${count + 1} failed:`, error);
-            count++;
-            if (count < 3) setTimeout(playBeep, 800);
-            else resolve();
+            console.warn(`Beep ${beepNumber} failed:`, error);
+            beepResolve();
           });
         }
         
-        audio.onended = () => {
-          count++;
-          if (count < 3) {
-            setTimeout(playBeep, 300);
-          } else {
-            console.log('All desktop beeps finished');
-            resolve();
-          }
-        };
-      }
-      
-      playBeep();
+        // Set timeout for beep completion
+        setTimeout(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          console.log(`Beep ${beepNumber} completed`);
+          beepResolve();
+        }, 700);
+      }, beepNumber === 1 ? 0 : 800);
+    });
+  }
+  
+  // Play beeps sequentially
+  async function playSequence() {
+    try {
+      await playBeep(1);
+      await playBeep(2);
+      await playBeep(3);
+      console.log('All mobile beeps finished');
+    } catch (error) {
+      console.error('Error in beep sequence:', error);
+    } finally {
+      resolve();
     }
-  });
+  }
+  
+  playSequence();
+}
+
+// Desktop beep implementation
+function playDesktopBeeps(resolve) {
+  const audio = getBeepAudioElement(1);
+  if (!audio) {
+    console.error('No beep audio element found');
+    resolve();
+    return;
+  }
+  
+  let count = 0;
+  
+  function playBeep() {
+    audio.currentTime = 0;
+    audio.volume = 1.0;
+    
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log(`Desktop beep ${count + 1} started`);
+      }).catch(error => {
+        console.warn(`Desktop beep ${count + 1} failed:`, error);
+        count++;
+        if (count < 3) setTimeout(playBeep, 800);
+        else resolve();
+      });
+    }
+    
+    audio.onended = () => {
+      count++;
+      if (count < 3) {
+        setTimeout(playBeep, 300);
+      } else {
+        console.log('All desktop beeps finished');
+        resolve();
+      }
+    };
+  }
+  
+  playBeep();
 }
 
 // Play day sound based on day of week
