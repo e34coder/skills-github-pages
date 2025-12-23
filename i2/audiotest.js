@@ -4,6 +4,7 @@
 let autoHideTimeout = null;
 let isTesting = false;
 let audioContextUnlocked = false;
+let lastTestTime = 0;
 
 // Initialize test audio button
 function initTestAudioButton() {
@@ -18,45 +19,6 @@ function initTestAudioButton() {
   document.addEventListener('click', showTestButton);
   document.addEventListener('touchstart', showTestButton);
   testAudioBtn.addEventListener('click', handleTestAudio);
-  
-  // On mobile, we need to unlock audio context on first interaction
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    // Create a one-time unlock function
-    const unlockAudio = () => {
-      if (!audioContextUnlocked) {
-        console.log('Unlocking audio context for mobile...');
-        
-        // Play and immediately pause to unlock audio
-        const audioElements = document.querySelectorAll('audio');
-        if (audioElements.length > 0) {
-          const audio = audioElements[0];
-          audio.volume = 0.01;
-          const playPromise = audio.play();
-          
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              audio.pause();
-              audio.currentTime = 0;
-              audioContextUnlocked = true;
-              console.log('Audio context unlocked');
-            }).catch(e => {
-              console.warn('Audio unlock failed:', e);
-            });
-          }
-        }
-        
-        // Remove the event listeners after first unlock attempt
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('touchstart', unlockAudio);
-      }
-    };
-    
-    // Try to unlock on first interaction
-    document.addEventListener('click', unlockAudio);
-    document.addEventListener('touchstart', unlockAudio);
-  }
   
   console.log('Test audio button initialized');
 }
@@ -82,51 +44,51 @@ function showTestButton() {
   }, 10000);
 }
 
-// Handle test audio button click - plays test sequence
+// Handle test audio button click
 async function handleTestAudio() {
-  if (isTesting) return;
+  // Prevent rapid clicking
+  const now = Date.now();
+  if (isTesting || (now - lastTestTime < 3000)) {
+    console.log('Test already in progress or too soon since last test');
+    return;
+  }
   
+  lastTestTime = now;
   isTesting = true;
+  
+  // Show loading state on button
+  const testAudioBtn = document.getElementById('testAudioBtn');
+  const originalText = testAudioBtn.innerHTML;
+  testAudioBtn.innerHTML = '⏳';
+  testAudioBtn.disabled = true;
+  
   try {
-    const now = new Date();
-    const day = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const currentDate = new Date();
+    const day = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+    const timeOfDay = getTestTimeOfDay(currentDate);
     
-    console.log('Starting audio test...');
+    console.log(`Starting test reminder for ${day} ${timeOfDay}`);
     
-    // Ensure all audio is ready
-    const audioElements = document.querySelectorAll('audio');
-    audioElements.forEach(audio => {
-      audio.volume = 1.0;
-    });
+    // Ensure all audio elements are ready
+    resetAllAudioElements();
     
-    // Play test sequence (similar to actual reminder but shorter)
-    await playBeepThreeTimes();
+    // Add a small delay to ensure audio context is ready
+    await new Promise(r => setTimeout(r, 100));
     
-    // Small pause
-    await new Promise(r => setTimeout(r, 300));
+    // Play complete test sequence
+    await playMedicineReminder(day, timeOfDay);
     
-    // Play medicine time announcement
-    await playMedicineTime();
-    
-    // Small pause
-    await new Promise(r => setTimeout(r, 300));
-    
-    // Play day of week
-    await playDaySound(day);
-    
-    // Small pause
-    await new Promise(r => setTimeout(r, 300));
-    
-    // Play "test" using noon sound as placeholder
-    await playTimeOfDaySound('noon');
-    
-    console.log('Test reminder completed');
+    console.log('Test reminder completed successfully');
     
   } catch (error) {
     console.error('Test audio failed:', error);
     alert('Audio test failed. Please check your device volume and permissions.');
   } finally {
+    // Restore button state
+    testAudioBtn.innerHTML = originalText;
+    testAudioBtn.disabled = false;
     isTesting = false;
+    
     // Re-hide button after testing
     setTimeout(() => {
       const testAudioBtn = document.getElementById('testAudioBtn');
@@ -136,4 +98,23 @@ async function handleTestAudio() {
       autoHideTimeout = null;
     }, 3000);
   }
+}
+
+// Determine which time of day sound to use for test based on current time
+function getTestTimeOfDay(date) {
+  const hour = date.getHours();
+  if (hour < 12) return 'morning';
+  if (hour < 17) return 'noon';
+  return 'evening';
+}
+
+// Reset all audio elements to ensure clean state
+function resetAllAudioElements() {
+  const audioElements = document.querySelectorAll('audio');
+  audioElements.forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = 1.0;
+  });
+  console.log('All audio elements reset');
 }
