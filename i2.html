@@ -41,7 +41,7 @@
     /* Clock and Date Section */
     .day-time-box {
       width: 100%;
-      display-flex: flex;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -351,35 +351,46 @@
 
     // ------------------------ TEST AUDIO BUTTON ------------------------
     const testAudioBtn = document.getElementById('testAudioBtn');
-    let interactionDetected = false;
+    let autoHideTimeout = null;
 
     // Show button after interaction
     function showTestButton() {
-      if (!interactionDetected) {
-        interactionDetected = true;
-        testAudioBtn.classList.add('show');
-        
-        // Auto-hide after 10 seconds
-        setTimeout(() => {
-          testAudioBtn.classList.remove('show');
-        }, 10000);
+      // Clear any existing timeout
+      if (autoHideTimeout) {
+        clearTimeout(autoHideTimeout);
       }
+      
+      testAudioBtn.classList.add('show');
+      
+      // Auto-hide after 10 seconds
+      autoHideTimeout = setTimeout(() => {
+        testAudioBtn.classList.remove('show');
+        autoHideTimeout = null;
+      }, 10000);
     }
 
-    // Test audio function
+    // Test audio function - FIXED to wait for beeps to finish before speaking
     async function testAudioReminder() {
       try {
         const now = new Date();
         const day = now.toLocaleDateString('en-US', { weekday: 'long' });
         
-        // Play the actual medicine reminder sequence
-        await playBeepThreeTimes(() => {
-          speakMedicine(`Test reminder, ${day} test time. This is a test of the medicine reminder system.`);
-        });
+        console.log('Starting audio test...');
+        
+        // Play beeps and then speak
+        await playBeepThreeTimes();
+        
+        // Small delay to ensure beeps are finished
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Speak the reminder
+        console.log('Playing voice reminder...');
+        speakMedicine(`Test reminder, ${day} test time. This is a test of the medicine reminder system.`);
         
         // Re-hide button after testing
         setTimeout(() => {
           testAudioBtn.classList.remove('show');
+          autoHideTimeout = null;
         }, 5000);
       } catch (error) {
         console.error('Test audio failed:', error);
@@ -545,83 +556,118 @@
       }
     }
 
-    async function playBeepThreeTimes(callback) {
-      const audio = document.getElementById("reminderSound");
-      let count = 0;
+    // UPDATED: Returns a promise that resolves when all beeps are done
+    function playBeepThreeTimes() {
+      return new Promise((resolve) => {
+        const audio = document.getElementById("reminderSound");
+        let count = 0;
 
-      // Try to use cached audio first
-      try {
-        const audioUrl = audio.querySelector('source').src;
-        const audioBlob = await getAudioFromCache(audioUrl);
-        
-        if (audioBlob) {
-          const audioUrlBlob = URL.createObjectURL(audioBlob);
-          audio.src = audioUrlBlob;
-        }
-      } catch (error) {
-        console.warn('Could not load cached audio, using original:', error);
-      }
-
-      function playNext() {
-        audio.currentTime = 0;
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.warn('Audio playback failed:', error);
-            // Continue with callback even if audio fails
-            count++;
-            if (count < 3) playNext();
-            else if (callback) callback();
+        // Try to use cached audio first
+        getAudioFromCache(audio.querySelector('source').src)
+          .then(audioBlob => {
+            if (audioBlob) {
+              const audioUrlBlob = URL.createObjectURL(audioBlob);
+              audio.src = audioUrlBlob;
+            }
+          })
+          .catch(error => {
+            console.warn('Could not load cached audio, using original:', error);
           });
-        }
 
-        audio.onended = () => {
-          count++;
-          if (count < 3) playNext();
-          else if (callback) callback();
-        };
-      }
-      playNext();
+        function playNext() {
+          audio.currentTime = 0;
+          const playPromise = audio.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.warn('Audio playback failed:', error);
+              // Continue even if audio fails
+              count++;
+              if (count < 3) {
+                setTimeout(playNext, 500);
+              } else {
+                resolve();
+              }
+            });
+          }
+
+          audio.onended = () => {
+            count++;
+            if (count < 3) {
+              setTimeout(playNext, 300); // Small pause between beeps
+            } else {
+              resolve();
+            }
+          };
+        }
+        
+        playNext();
+      });
     }
 
+    // UPDATED: Improved speech synthesis
     function speakMedicine(text) {
+      // Cancel any ongoing speech
+      speechSynthesis.cancel();
+      
       // Check if speech synthesis is available
       if (!('speechSynthesis' in window)) {
         console.warn('Speech synthesis not supported');
         return;
       }
 
-      const msg = new SpeechSynthesisUtterance(text);
-      const voices = speechSynthesis.getVoices();
-      
-      // Wait for voices to load if needed
-      if (voices.length === 0) {
-        speechSynthesis.onvoiceschanged = () => {
-          const voices = speechSynthesis.getVoices();
-          const female = voices.find(v =>
-            v.name.toLowerCase().includes("zira") ||
-            v.name.toLowerCase().includes("samantha") ||
-            v.name.toLowerCase().includes("female") ||
-            v.lang.includes("en")
-          );
-          if (female) msg.voice = female;
-          msg.rate = 0.95;
-          msg.pitch = 1.1;
-          speechSynthesis.speak(msg);
-        };
-      } else {
-        const female = voices.find(v =>
-          v.name.toLowerCase().includes("zira") ||
-          v.name.toLowerCase().includes("samantha") ||
-          v.name.toLowerCase().includes("female") ||
-          v.lang.includes("en")
-        );
-        if (female) msg.voice = female;
-        msg.rate = 0.95;
-        msg.pitch = 1.1;
+      // Wait a moment before speaking to ensure audio context is ready
+      setTimeout(() => {
+        const msg = new SpeechSynthesisUtterance(text);
+        
+        // Set properties for better speech
+        msg.volume = 1; // Maximum volume
+        msg.rate = 0.9; // Slightly slower
+        msg.pitch = 1; // Normal pitch
+        
+        // Get available voices
+        const voices = speechSynthesis.getVoices();
+        
+        // Try to find a good voice
+        let selectedVoice = null;
+        
+        // Prioritize specific voices
+        const voicePreferences = [
+          'Google US English',
+          'Microsoft David Desktop',
+          'Microsoft Zira Desktop',
+          'Samantha',
+          'Alex',
+          'Karen',
+          'Daniel'
+        ];
+        
+        for (const pref of voicePreferences) {
+          const voice = voices.find(v => v.name.includes(pref));
+          if (voice) {
+            selectedVoice = voice;
+            break;
+          }
+        }
+        
+        // If no preferred voice, use first English voice
+        if (!selectedVoice) {
+          selectedVoice = voices.find(v => v.lang.startsWith('en-'));
+        }
+        
+        // If still no voice, use default
+        if (selectedVoice) {
+          msg.voice = selectedVoice;
+        }
+        
+        // Add event listeners for debugging
+        msg.onstart = () => console.log('Speech started');
+        msg.onend = () => console.log('Speech ended');
+        msg.onerror = (event) => console.error('Speech error:', event.error);
+        
+        // Speak the message
         speechSynthesis.speak(msg);
-      }
+      }, 100);
     }
 
     function checkMedicineReminder(now) {
@@ -632,23 +678,26 @@
 
       if (h === 6 && m === 0 && !playedToday.morning) {
         playedToday.morning = true;
-        playBeepThreeTimes(() =>
-          speakMedicine(`Medicine time, ${day} morning.`)
-        );
+        console.log('Playing morning reminder...');
+        playBeepThreeTimes().then(() => {
+          speakMedicine(`Medicine time, ${day} morning.`);
+        });
       }
 
       if (h === 12 && m === 0 && !playedToday.noon) {
         playedToday.noon = true;
-        playBeepThreeTimes(() =>
-          speakMedicine(`Medicine time, ${day} noon.`)
-        );
+        console.log('Playing noon reminder...');
+        playBeepThreeTimes().then(() => {
+          speakMedicine(`Medicine time, ${day} noon.`);
+        });
       }
 
       if (h === 18 && m === 0 && !playedToday.evening) {
         playedToday.evening = true;
-        playBeepThreeTimes(() =>
-          speakMedicine(`Medicine time, ${day} evening.`)
-        );
+        console.log('Playing evening reminder...');
+        playBeepThreeTimes().then(() => {
+          speakMedicine(`Medicine time, ${day} evening.`);
+        });
       }
     }
 
@@ -665,8 +714,24 @@
       // Fetch prayer times initially and then every hour
       setInterval(fetchPrayerTimes, 3600000); // 3600000 ms = 1 hour
       
-      // Preload voices for speech synthesis
-      speechSynthesis.getVoices();
+      // Load voices for speech synthesis
+      let voicesLoaded = false;
+      
+      // Function to load voices
+      function loadVoices() {
+        if (speechSynthesis.getVoices().length > 0) {
+          voicesLoaded = true;
+          console.log('Voices loaded:', speechSynthesis.getVoices().length);
+        } else {
+          setTimeout(loadVoices, 100);
+        }
+      }
+      
+      // Start loading voices
+      loadVoices();
+      
+      // Also listen for voiceschanged event
+      speechSynthesis.onvoiceschanged = loadVoices;
     });
 
   </script>
