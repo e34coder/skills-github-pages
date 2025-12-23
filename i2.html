@@ -25,6 +25,7 @@
       color: #C7C8C8;
       text-align: center;
       padding: 20px;
+      touch-action: manipulation;
     }
 
     .container {
@@ -40,7 +41,7 @@
     /* Clock and Date Section */
     .day-time-box {
       width: 100%;
-      display: flex;
+      display-flex: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -138,6 +139,37 @@
       margin: 0 10px;
     }
 
+    /* Test Audio Button */
+    #testAudioBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    #testAudioBtn:hover,
+    #testAudioBtn:active {
+      background-color: #45a049;
+      transform: scale(1.1);
+    }
+
+    #testAudioBtn.show {
+      display: flex;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .container {
@@ -161,6 +193,14 @@
       
       .separator {
         display: none;
+      }
+      
+      #testAudioBtn {
+        width: 60px;
+        height: 60px;
+        bottom: 15px;
+        right: 15px;
+        font-size: 28px;
       }
     }
 
@@ -253,11 +293,105 @@
   </div>
 
   <!-- 🔊 Sound -->
-  <audio id="reminderSound">
+  <audio id="reminderSound" preload="auto">
     <source src="https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- Test Audio Button -->
+  <button id="testAudioBtn" title="Test Audio Reminder">🔊</button>
+
   <script>
+    // ------------------------ CACHE FOR OFFLINE USE ------------------------
+    const CACHE_NAME = 'medicine-reminder-cache-v1';
+    const urlsToCache = [
+      'https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3'
+    ];
+
+    // Cache audio file on load
+    async function cacheAudioFile() {
+      try {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.addAll(urlsToCache);
+        console.log('Audio file cached successfully');
+      } catch (error) {
+        console.warn('Failed to cache audio file:', error);
+      }
+    }
+
+    // Get audio from cache or network
+    async function getAudioFromCache(url) {
+      try {
+        const cache = await caches.open(CACHE_NAME);
+        const cachedResponse = await cache.match(url);
+        
+        if (cachedResponse) {
+          console.log('Using cached audio');
+          return cachedResponse.blob();
+        }
+        
+        // If not in cache, fetch and cache it
+        const response = await fetch(url);
+        if (response.ok) {
+          const responseClone = response.clone();
+          cache.put(url, responseClone);
+        }
+        return response.blob();
+      } catch (error) {
+        console.warn('Error accessing cache:', error);
+        // Fallback to network
+        try {
+          const response = await fetch(url);
+          return response.blob();
+        } catch (fetchError) {
+          console.error('Failed to fetch audio:', fetchError);
+          return null;
+        }
+      }
+    }
+
+    // ------------------------ TEST AUDIO BUTTON ------------------------
+    const testAudioBtn = document.getElementById('testAudioBtn');
+    let interactionDetected = false;
+
+    // Show button after interaction
+    function showTestButton() {
+      if (!interactionDetected) {
+        interactionDetected = true;
+        testAudioBtn.classList.add('show');
+        
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+          testAudioBtn.classList.remove('show');
+        }, 10000);
+      }
+    }
+
+    // Test audio function
+    async function testAudioReminder() {
+      try {
+        const now = new Date();
+        const day = now.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        // Play the actual medicine reminder sequence
+        await playBeepThreeTimes(() => {
+          speakMedicine(`Test reminder, ${day} test time. This is a test of the medicine reminder system.`);
+        });
+        
+        // Re-hide button after testing
+        setTimeout(() => {
+          testAudioBtn.classList.remove('show');
+        }, 5000);
+      } catch (error) {
+        console.error('Test audio failed:', error);
+        alert('Audio test failed. Please check your device volume and permissions.');
+      }
+    }
+
+    // Event listeners for interaction
+    document.addEventListener('click', showTestButton);
+    document.addEventListener('touchstart', showTestButton);
+    testAudioBtn.addEventListener('click', testAudioReminder);
+
     // ------------------------ Geolocation and Prayer Time Fetch ------------------------
 
     // Add a variable to store location data
@@ -401,7 +535,7 @@
     setInterval(updateClock, 10000);
     updateClock();
 
-    // ------------------------ MEDICINE REMINDER ------------------------
+    // ------------------------ MEDICINE REMINDER (UPDATED FOR OFFLINE) ------------------------
 
     function resetIfNewDay() {
       const today = new Date().toDateString();
@@ -411,13 +545,37 @@
       }
     }
 
-    function playBeepThreeTimes(callback) {
+    async function playBeepThreeTimes(callback) {
       const audio = document.getElementById("reminderSound");
       let count = 0;
 
+      // Try to use cached audio first
+      try {
+        const audioUrl = audio.querySelector('source').src;
+        const audioBlob = await getAudioFromCache(audioUrl);
+        
+        if (audioBlob) {
+          const audioUrlBlob = URL.createObjectURL(audioBlob);
+          audio.src = audioUrlBlob;
+        }
+      } catch (error) {
+        console.warn('Could not load cached audio, using original:', error);
+      }
+
       function playNext() {
         audio.currentTime = 0;
-        audio.play();
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.warn('Audio playback failed:', error);
+            // Continue with callback even if audio fails
+            count++;
+            if (count < 3) playNext();
+            else if (callback) callback();
+          });
+        }
+
         audio.onended = () => {
           count++;
           if (count < 3) playNext();
@@ -428,17 +586,42 @@
     }
 
     function speakMedicine(text) {
+      // Check if speech synthesis is available
+      if (!('speechSynthesis' in window)) {
+        console.warn('Speech synthesis not supported');
+        return;
+      }
+
       const msg = new SpeechSynthesisUtterance(text);
       const voices = speechSynthesis.getVoices();
-      const female = voices.find(v =>
-        v.name.toLowerCase().includes("zira") ||
-        v.name.toLowerCase().includes("samantha") ||
-        v.name.toLowerCase().includes("female")
-      );
-      if (female) msg.voice = female;
-      msg.rate = 0.95;
-      msg.pitch = 1.1;
-      speechSynthesis.speak(msg);
+      
+      // Wait for voices to load if needed
+      if (voices.length === 0) {
+        speechSynthesis.onvoiceschanged = () => {
+          const voices = speechSynthesis.getVoices();
+          const female = voices.find(v =>
+            v.name.toLowerCase().includes("zira") ||
+            v.name.toLowerCase().includes("samantha") ||
+            v.name.toLowerCase().includes("female") ||
+            v.lang.includes("en")
+          );
+          if (female) msg.voice = female;
+          msg.rate = 0.95;
+          msg.pitch = 1.1;
+          speechSynthesis.speak(msg);
+        };
+      } else {
+        const female = voices.find(v =>
+          v.name.toLowerCase().includes("zira") ||
+          v.name.toLowerCase().includes("samantha") ||
+          v.name.toLowerCase().includes("female") ||
+          v.lang.includes("en")
+        );
+        if (female) msg.voice = female;
+        msg.rate = 0.95;
+        msg.pitch = 1.1;
+        speechSynthesis.speak(msg);
+      }
     }
 
     function checkMedicineReminder(now) {
@@ -469,10 +652,22 @@
       }
     }
 
-    // Initialize location and prayer times
-    getLocation();
-    // Fetch prayer times initially and then every hour
-    setInterval(fetchPrayerTimes, 3600000); // 3600000 ms = 1 hour
+    // ------------------------ INITIALIZATION ------------------------
+    
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Cache audio file on load
+      await cacheAudioFile();
+      
+      // Initialize location and prayer times
+      getLocation();
+      
+      // Fetch prayer times initially and then every hour
+      setInterval(fetchPrayerTimes, 3600000); // 3600000 ms = 1 hour
+      
+      // Preload voices for speech synthesis
+      speechSynthesis.getVoices();
+    });
 
   </script>
 
