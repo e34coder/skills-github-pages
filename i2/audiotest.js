@@ -3,7 +3,6 @@
 // Global variables
 let autoHideTimeout = null;
 let isTesting = false;
-let audioContextUnlocked = false;
 let lastTestTime = 0;
 
 // Initialize test audio button
@@ -20,7 +19,61 @@ function initTestAudioButton() {
   document.addEventListener('touchstart', showTestButton);
   testAudioBtn.addEventListener('click', handleTestAudio);
   
+  // iOS-specific audio unlock
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS) {
+    console.log('iOS device detected, setting up audio unlock');
+    setupIOSAudioUnlock();
+  }
+  
   console.log('Test audio button initialized');
+}
+
+// iOS audio unlock setup
+function setupIOSAudioUnlock() {
+  // Create a hidden button that user can tap to unlock audio
+  const unlockButton = document.createElement('button');
+  unlockButton.style.cssText = 'position:fixed;top:10px;left:10px;padding:10px;background:#ff4444;color:white;border:none;border-radius:5px;z-index:9999;display:none;';
+  unlockButton.textContent = '🔊 Tap to Enable Audio';
+  unlockButton.id = 'iosAudioUnlock';
+  document.body.appendChild(unlockButton);
+  
+  // Show unlock button on first interaction
+  const showUnlock = () => {
+    unlockButton.style.display = 'block';
+    document.removeEventListener('click', showUnlock);
+    document.removeEventListener('touchstart', showUnlock);
+  };
+  
+  document.addEventListener('click', showUnlock);
+  document.addEventListener('touchstart', showUnlock);
+  
+  // Unlock audio when button is tapped
+  unlockButton.addEventListener('click', () => {
+    console.log('iOS audio unlock triggered');
+    
+    // Try to play a silent audio to unlock audio context
+    const audioElements = document.querySelectorAll('audio');
+    if (audioElements.length > 0) {
+      const audio = audioElements[0];
+      audio.volume = 0.01;
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.volume = 1.0;
+          console.log('iOS audio context unlocked');
+          unlockButton.style.display = 'none';
+          alert('Audio enabled! You can now test the reminder.');
+        }).catch(e => {
+          console.warn('iOS audio unlock failed:', e);
+          alert('Audio permission denied. Please allow audio in Safari settings.');
+        });
+      }
+    }
+  });
 }
 
 // Show button after interaction
@@ -48,7 +101,7 @@ function showTestButton() {
 async function handleTestAudio() {
   // Prevent rapid clicking
   const now = Date.now();
-  if (isTesting || (now - lastTestTime < 3000)) {
+  if (isTesting || (now - lastTestTime < 4000)) {
     console.log('Test already in progress or too soon since last test');
     return;
   }
@@ -69,11 +122,11 @@ async function handleTestAudio() {
     
     console.log(`Starting test reminder for ${day} ${timeOfDay}`);
     
-    // Ensure all audio elements are ready
+    // Reset all audio elements
     resetAllAudioElements();
     
-    // Add a small delay to ensure audio context is ready
-    await new Promise(r => setTimeout(r, 100));
+    // Add a delay for iOS
+    await new Promise(r => setTimeout(r, 200));
     
     // Play complete test sequence
     await playMedicineReminder(day, timeOfDay);
@@ -82,7 +135,14 @@ async function handleTestAudio() {
     
   } catch (error) {
     console.error('Test audio failed:', error);
-    alert('Audio test failed. Please check your device volume and permissions.');
+    
+    // iOS-specific error message
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      alert('Audio test failed on iOS. Please tap the red "Tap to Enable Audio" button in the top-left corner first, then try again.');
+    } else {
+      alert('Audio test failed. Please check your device volume and permissions.');
+    }
   } finally {
     // Restore button state
     testAudioBtn.innerHTML = originalText;
