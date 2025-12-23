@@ -89,30 +89,28 @@
   <script src="i2/clock.js"></script>
   <script src="i2/audiotest.js"></script>
   
-  <script>
-    // ------------------------ INITIALIZATION ------------------------
+ <script>
+  // ------------------------ INITIALIZATION ------------------------
+  
+  // Initialize everything
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Initializing app...');
     
-    // Initialize everything
-    document.addEventListener('DOMContentLoaded', async () => {
-      console.log('Initializing app...');
-      
-      // Initialize test audio button
-      initTestAudioButton();
-      
-      // Cache audio files on load
-      await cacheAudioFiles();
-      
-      // Initialize location and prayer times
-      getLocation();
-      
-      // Fetch prayer times initially and then every hour
-      setInterval(fetchPrayerTimes, 3600000);
-      
-      console.log('App initialized');
-    });
-
-  </script>
-
+    // Initialize test audio button (this will set up audio context initialization)
+    initTestAudioButton();
+    
+    // Cache audio files on load
+    await cacheAudioFiles();
+    
+    // Initialize location and prayer times
+    getLocation();
+    
+    // Fetch prayer times initially and then every hour
+    setInterval(fetchPrayerTimes, 3600000);
+    
+    console.log('App initialized - Tap screen to initialize audio context');
+  });
+</script>
 </body>
 
 </html>
