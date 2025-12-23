@@ -38,9 +38,46 @@
     </div>
   </div>
 
-  <!-- 🔊 Sound -->
+  <!-- 🔊 Sound Elements -->
   <audio id="reminderSound" preload="auto">
     <source src="https://e34coder.github.io/skills-github-pages/sounds/iphone/point-smooth-beep-230573.mp3" type="audio/mpeg">
+  </audio>
+  
+  <!-- Day sounds -->
+  <audio id="sundaySound" preload="auto">
+    <source src="i2/sounds/sunday.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="mondaySound" preload="auto">
+    <source src="i2/sounds/monday.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="tuesdaySound" preload="auto">
+    <source src="i2/sounds/tuesday.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="wednesdaySound" preload="auto">
+    <source src="i2/sounds/wednesday.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="thursdaySound" preload="auto">
+    <source src="i2/sounds/thursday.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="fridaySound" preload="auto">
+    <source src="i2/sounds/friday.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="saturdaySound" preload="auto">
+    <source src="i2/sounds/saturday.mp3" type="audio/mpeg">
+  </audio>
+  
+  <!-- Time of day sounds -->
+  <audio id="medicineTimeSound" preload="auto">
+    <source src="i2/sounds/medicine_time.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="morningSound" preload="auto">
+    <source src="i2/sounds/morning.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="noonSound" preload="auto">
+    <source src="i2/sounds/noon.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="eveningSound" preload="auto">
+    <source src="i2/sounds/evening.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Test Audio Button -->
@@ -62,8 +99,8 @@
       // Initialize test audio button
       initTestAudioButton();
       
-      // Cache audio file on load
-      await cacheAudioFile();
+      // Cache audio files on load
+      await cacheAudioFiles();
       
       // Initialize location and prayer times
       getLocation();
@@ -71,9 +108,8 @@
       // Fetch prayer times initially and then every hour
       setInterval(fetchPrayerTimes, 3600000);
       
-      // Preload the audio
-      const audio = document.getElementById("reminderSound");
-      audio.load();
+      // Preload all audio elements
+      preloadAllAudio();
       
       console.log('App initialized');
     });
