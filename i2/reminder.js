@@ -399,19 +399,19 @@ function checkMedicineReminder(now) {
   const m = now.getMinutes();
   const day = now.toLocaleDateString('en-US', { weekday: 'long' });
 
-  if (h === 6 && m === 0 && !playedToday.morning) {
+  if (h === 9 && m === 0 && !playedToday.morning) {
     playedToday.morning = true;
     console.log('Playing morning reminder...');
     playMedicineReminder(day, 'morning');
   }
 
-  if (h === 12 && m === 0 && !playedToday.noon) {
+  if (h === 15 && m === 0 && !playedToday.noon) {
     playedToday.noon = true;
     console.log('Playing noon reminder...');
     playMedicineReminder(day, 'noon');
   }
 
-  if (h === 18 && m === 0 && !playedToday.evening) {
+  if (h === 21 && m === 0 && !playedToday.evening) {
     playedToday.evening = true;
     console.log('Playing evening reminder...');
     playMedicineReminder(day, 'evening');
