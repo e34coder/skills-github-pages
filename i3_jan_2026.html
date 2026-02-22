@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock and Date</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+      color: #C7C8C8;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Green Dot Indicator */
+    .status-indicator {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #00ff00;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .status-indicator:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+    }
+
+    /* Default layout */
+    .day-time-box {
+      border-bottom: 1px solid #797d7c;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 1vh;
+      /* Use viewport height for padding */
+    }
+
+    .prayer-info {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .current-prayer-name,
+    .current-prayer-time {
+      margin: 0 0.5vw;
+      color: #FFFFFF;
+      /* Changed to white as requested */
+    }
+
+    /* New styling for next prayer container */
+    .next-prayer-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #FFFFFF;
+      border-radius: 25px;
+      padding: 10px 20px;
+      margin-left: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .next-prayer-name,
+    .next-prayer-time {
+      color: #FFFFFF;
+      margin: 0 5px;
+      font-size: 1.2em;
+      /* Slightly bigger */
+      font-weight: bold;
+    }
+
+    .next-prayer-name {
+      margin-right: 5px;
+    }
+
+    .next-prayer-time {
+      margin-left: 5px;
+    }
+
+    .prayer-time-break {
+      margin: 0 10px;
+      color: #FFFFFF;
+    }
+
+    /* Portrait Mode Adjustments */
+    @media screen and (orientation: portrait) {
+      .day-time-box {
+        flex-direction: column;
+      }
+
+      .day {
+        margin-bottom: 1vh;
+        font-size: 10vw;
+        /* Space between day and time */
+      }
+
+      .time {
+        font-size: 10vw;
+      }
+
+      .date {
+        font-size: 10vw;
+        /* Dynamic font size based on viewport width */
+        margin: 1vh;
+      }
+
+      .prayer-info {
+        flex-direction: column;
+        font-size: 10vw;
+        margin: 4vw 0.5vw;
+      }
+
+      .current-prayer-name,
+      .current-prayer-time {
+        margin: 0 0.5vw 1vw;
+      }
+
+      .next-prayer-container {
+        margin-top: 15px;
+        margin-left: 0;
+        padding: 8px 16px;
+      }
+
+      .next-prayer-name,
+      .next-prayer-time {
+        font-size: 1.1em;
+      }
+
+      .prayer-time-break {
+        margin: 1vw;
+      }
+    }
+
+    /* Landscape Mode Adjustments */
+    @media screen and (orientation: landscape) {
+      .day-time-box {
+        flex-direction: column;
+        /* Stacks day and time vertically */
+        justify-content: center;
+        align-items: center;
+        padding: 0.5vh;
+        /* Adjust padding for better spacing */
+      }
+
+      .day {
+        margin-bottom: 1vh;
+        font-size: 10vw;
+        /* Space between day and time */
+      }
+
+      .time {
+        font-size: 10vw;
+      }
+
+      .date {
+        font-size: 10vw;
+        /* Dynamic font size based on viewport width */
+        margin: 1vh;
+      }
+
+      .prayer-info {
+        margin: 1vw 0.5vw;
+        font-size: 7vw;
+      }
+
+      .current-prayer-name,
+      .current-prayer-time {
+        margin: 0 1vw;
+      }
+
+      .next-prayer-container {
+        margin-left: 15px;
+        padding: 8px 16px;
+      }
+
+      .next-prayer-name,
+      .next-prayer-time {
+        margin: 0 1vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Green Dot Indicator -->
+  <div id="status-indicator" class="status-indicator" onclick="location.reload()" title="Using cached data - Click to reload"></div>
+
+  <div class="day-time-box">
+    <div class="day" id="day"></div>
+    <div class="time" id="clock"></div>
+    <div class="date" id="date"></div>
+  </div>
+
+  <div class="prayer-info">
+    <p id="current-prayer-name" class="current-prayer-name"></p>
+    <p id="current-prayer-time" class="current-prayer-time"></p>
+    <p id="prayer-time-break" class="prayer-time-break"></p>
+    <div id="next-prayer-container" class="next-prayer-container">
+      <p id="next-prayer-name" class="next-prayer-name"></p>
+      <p id="next-prayer-time" class="next-prayer-time"></p>
+    </div>
+  </div>
+
+  <script>
+    let userLatitude, userLongitude;
+    let prayerTimesData = null;
+    let lastFetchDate = null;
+    let previousDayData = null; // Store previous day's data
+    let fetchRetryTimeout = null;
+    let isFetching = false;
+    let fetchFailed = false;
+
+    // Load cached data from localStorage on startup
+    function loadCachedData() {
+      try {
+        const cached = localStorage.getItem('prayerTimesCache');
+        if (cached) {
+          const cache = JSON.parse(cached);
+          const cacheDate = new Date(cache.date);
+          const today = new Date().toDateString();
+          
+          // Check if cache is from today
+          if (cacheDate.toDateString() === today) {
+            prayerTimesData = cache.data;
+            lastFetchDate = today;
+            console.log('Loaded today\'s data from cache');
+          } else {
+            // Store as previous day's data
+            previousDayData = cache.data;
+            console.log('Loaded previous day\'s data from cache');
+          }
+        }
+      } catch (e) {
+        console.error('Error loading cached data:', e);
+      }
+    }
+
+    // Save data to cache
+    function cacheData(data) {
+      try {
+        const cache = {
+          date: new Date().toISOString(),
+          data: data
+        };
+        localStorage.setItem('prayerTimesCache', JSON.stringify(cache));
+      } catch (e) {
+        console.error('Error caching data:', e);
+      }
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          userLatitude = position.coords.latitude;
+          userLongitude = position.coords.longitude;
+          fetchPrayerTimes();
+        }, function(error) {
+          console.error("Error getting geolocation: ", error);
+          // Try to use cached data if location fails
+          showGreenDot(true);
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+        showGreenDot(true);
+      }
+    }
+
+    function am_pm(hours) {
+      return hours >= 12 ? 'pm' : 'am';
+    }
+
+    function updateClock() {
+      const clockElement = document.getElementById('clock');
+      const dateElement = document.getElementById('date');
+      const dayElement = document.getElementById('day');
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = am_pm(hours);
+      const hour12 = hours % 12 || 12;
+      const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
+      let partOfDay = hours < 12 ? 'Morning' : (hours < 18 ? 'Afternoon' : 'Evening');
+      clockElement.textContent = formattedTime;
+      const formattedDay = now.toLocaleDateString('en-US', {
+        weekday: 'long'
+      });
+      const formattedDate = now.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      dayElement.textContent = `${formattedDay} ${partOfDay}, `;
+      dateElement.textContent = formattedDate;
+      
+      // Check if day changed
+      const today = now.toDateString();
+      if (lastFetchDate !== today) {
+        fetchPrayerTimes();
+      }
+    }
+
+    function startClock() {
+      updateClock();
+      setInterval(updateClock, 10000);
+    }
+    startClock();
+
+    function showGreenDot(show) {
+      const indicator = document.getElementById('status-indicator');
+      if (indicator) {
+        indicator.style.display = show ? 'block' : 'none';
+      }
+    }
+
+    function scheduleHourlyRetry() {
+      if (fetchRetryTimeout) {
+        clearTimeout(fetchRetryTimeout);
+      }
+      
+      const now = new Date();
+      const nextHour = new Date(now);
+      nextHour.setHours(now.getHours() + 1, 0, 0, 0); // Next hour on the hour
+      
+      const timeUntilNextHour = nextHour - now;
+      
+      fetchRetryTimeout = setTimeout(() => {
+        fetchPrayerTimes();
+      }, timeUntilNextHour);
+      
+      console.log(`Scheduled retry for ${nextHour.toLocaleTimeString()}`);
+    }
+        async function fetchPrayerTimes() {
+      // Prevent multiple simultaneous fetch attempts
+      if (isFetching) {
+        console.log('Fetch already in progress');
+        return;
+      }
+
+      if (!userLatitude || !userLongitude) {
+        console.log('Waiting for location...');
+        return;
+      }
+
+      const currentDate = new Date().toDateString();
+      
+      // Check if we already have today's data
+      if (lastFetchDate === currentDate && prayerTimesData) {
+        console.log("Prayer times already fetched today.");
+        updatePrayerInfo();
+        showGreenDot(false);
+        return;
+      }
+
+      isFetching = true;
+      fetchFailed = false;
+
+      const method = 2;
+      const url = `https://api.aladhan.com/v1/timings?latitude=${userLatitude}&longitude=${userLongitude}&method=${method}`;
+
+      try {
+        console.log('Fetching prayer times...');
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.code !== 200) {
+          throw new Error(`API error! code: ${data.code}`);
+        }
+
+        const timings = data.data.timings;
+        const newPrayerTimes = [{
+            name: 'Fajr',
+            time: timings.Fajr
+          },
+          {
+            name: 'Dhuhr',
+            time: timings.Dhuhr
+          },
+          {
+            name: 'Asr',
+            time: timings.Asr
+          },
+          {
+            name: 'Maghrib',
+            time: timings.Maghrib
+          },
+          {
+            name: 'Isha',
+            time: timings.Isha
+          }
+        ];
+
+        // Store previous day's data before updating
+        if (prayerTimesData && lastFetchDate !== currentDate) {
+          previousDayData = prayerTimesData;
+        }
+
+        prayerTimesData = newPrayerTimes;
+        lastFetchDate = currentDate;
+        fetchFailed = false;
+        
+        // Cache the successful fetch
+        cacheData(prayerTimesData);
+        
+        updatePrayerInfo();
+        showGreenDot(false);
+        
+        console.log('Prayer times fetched successfully');
+
+      } catch (error) {
+        console.error('Error fetching prayer times:', error);
+        fetchFailed = true;
+        
+        // Try to use previous day's data
+        if (previousDayData) {
+          console.log('Using previous day\'s data');
+          prayerTimesData = previousDayData;
+          updatePrayerInfo();
+          showGreenDot(true); // Show green dot to indicate cached data
+        } else {
+          // No previous data available
+          showGreenDot(true);
+        }
+        
+        // Schedule retry for next hour
+        scheduleHourlyRetry();
+        
+      } finally {
+        isFetching = false;
+      }
+    }
+
+    // Modified prayer info update function with fixed current prayer logic
+    function updatePrayerInfo() {
+      if (!prayerTimesData) return;
+
+      const now = new Date();
+      const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+      
+      let currentPrayer = null;
+      let currentPrayerTime = null;
+      let nextPrayer = null;
+      let nextPrayerTime = null;
+
+      // Convert prayer times to minutes for comparison
+      const prayerTimesInMinutes = prayerTimesData.map(prayer => {
+        const [hour, minute] = prayer.time.split(':');
+        return parseInt(hour) * 60 + parseInt(minute);
+      });
+
+      // Find current and next prayer
+      for (let i = 0; i < prayerTimesData.length; i++) {
+        if (prayerTimesInMinutes[i] <= currentTimeInMinutes) {
+          currentPrayer = prayerTimesData[i].name;
+          currentPrayerTime = prayerTimesData[i].time;
+          
+          // Next prayer is either the next one or first of next day
+          if (i < prayerTimesData.length - 1) {
+            nextPrayer = prayerTimesData[i + 1].name;
+            nextPrayerTime = prayerTimesData[i + 1].time;
+          } else {
+            nextPrayer = prayerTimesData[0].name;
+            nextPrayerTime = prayerTimesData[0].time;
+          }
+        }
+      }
+
+      // If no current prayer found (before Fajr), show Isha as current and Fajr as next
+      if (!currentPrayer) {
+        currentPrayer = prayerTimesData[prayerTimesData.length - 1].name;
+        currentPrayerTime = prayerTimesData[prayerTimesData.length - 1].time;
+        nextPrayer = prayerTimesData[0].name;
+        nextPrayerTime = prayerTimesData[0].time;
+      }
+
+      // Format prayer times for display
+      const formatPrayerTime = (time) => {
+        const [hour, minute] = time.split(':');
+        let formattedHour = parseInt(hour);
+        const ampm = am_pm(formattedHour);
+        if (formattedHour > 12) formattedHour -= 12;
+        if (formattedHour === 0) formattedHour = 12;
+        return `${formattedHour}:${minute} ${ampm}`;
+      };
+            // Update the display
+      document.getElementById('current-prayer-name').textContent = currentPrayer;
+      document.getElementById('current-prayer-time').textContent = `${formatPrayerTime(currentPrayerTime)},`;
+      document.getElementById('next-prayer-name').textContent = nextPrayer;
+      document.getElementById('next-prayer-time').textContent = formatPrayerTime(nextPrayerTime);
+
+      // Update the separator
+      const breakElement = document.getElementById('prayer-time-break');
+      breakElement.textContent = '→';
+      breakElement.style.color = '#FFFFFF';
+    }
+
+    // Initialize everything
+    function initialize() {
+      // Load cached data first
+      loadCachedData();
+      
+      // Update prayer info with cached data if available
+      if (prayerTimesData || previousDayData) {
+        if (!prayerTimesData && previousDayData) {
+          prayerTimesData = previousDayData;
+          showGreenDot(true);
+        }
+        updatePrayerInfo();
+      }
+      
+      // Get location and fetch fresh data
+      getLocation();
+      
+      // Set up periodic check for new day (every minute)
+      setInterval(() => {
+        const today = new Date().toDateString();
+        if (lastFetchDate !== today) {
+          fetchPrayerTimes();
+        }
+      }, 60000);
+    }
+
+    // Handle online/offline events
+    window.addEventListener('online', () => {
+      console.log('Connection restored - attempting to fetch');
+      fetchPrayerTimes();
+    });
+
+    // Call initialize when page loads
+    window.onload = initialize;
+
+    // Clean up timeouts on page unload
+    window.addEventListener('beforeunload', () => {
+      if (fetchRetryTimeout) {
+        clearTimeout(fetchRetryTimeout);
+      }
+    });
+  </script>
+</body>
+
+</html>
