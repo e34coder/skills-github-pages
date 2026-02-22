@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +14,7 @@
     body,
     html {
       height: 100%;
+      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -24,7 +24,8 @@
       color: #C7C8C8;
       text-align: center;
       position: relative;
-      overflow: hidden;
+      overflow: auto; /* Changed from hidden to allow scrolling if needed */
+      padding: 2vh 2vw;
     }
 
     /* Green Dot Indicator */
@@ -52,12 +53,14 @@
     .day-time-box {
       border-bottom: 2px solid #797d7c;
       display: flex;
-      flex-direction: row;
+      flex-direction: column; /* Stack vertically by default */
       justify-content: center;
       align-items: center;
       text-align: center;
       padding: 2vh 4vw;
       width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .time {
@@ -71,10 +74,12 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      animation: pulse 2s ease-in-out infinite;
+      /* animation removed - pulsing stopped */
       position: relative;
       display: inline-block;
-      padding: 0 20px;
+      padding: 0 10px;
+      line-height: 1.2;
+      word-break: break-word;
     }
 
     .time::after {
@@ -90,28 +95,53 @@
       opacity: 0.5;
     }
 
-    @keyframes pulse {
-      0%, 100% {
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.7),
-                     0 0 40px rgba(255, 255, 255, 0.4);
-      }
-      50% {
-        text-shadow: 0 0 30px rgba(255, 255, 255, 0.9),
-                     0 0 60px rgba(255, 255, 255, 0.6),
-                     0 0 90px rgba(255, 255, 255, 0.3);
-      }
+    /* Day container with stacked layout */
+    .day-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1vh 0;
     }
 
-    .day {
+    .day-name {
       font-size: 8vw;
       color: #C7C8C8;
-      margin-right: 10px;
+      line-height: 1.2;
     }
 
-    .date {
+    .day-part {
       font-size: 6vw;
       color: #C7C8C8;
-      margin-left: 10px;
+      line-height: 1.2;
+    }
+
+    /* Date container with stacked layout */
+    .date-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1vh 0;
+    }
+
+    .date-month {
+      font-size: 6vw;
+      color: #C7C8C8;
+      line-height: 1.2;
+    }
+
+    .date-day {
+      font-size: 8vw;
+      color: #C7C8C8;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+
+    .date-year {
+      font-size: 5vw;
+      color: #C7C8C8;
+      line-height: 1.2;
     }
 
     .prayer-info {
@@ -123,6 +153,9 @@
       flex-wrap: wrap;
       padding: 0 20px;
       width: 100%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .current-prayer-name,
@@ -131,6 +164,7 @@
       color: #FFFFFF;
       font-size: 6vw;
       font-weight: bold;
+      white-space: nowrap;
     }
 
     .next-prayer-container {
@@ -143,6 +177,7 @@
       padding: 1.5vh 4vw;
       margin-left: 2vw;
       background-color: rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
     }
 
     .next-prayer-name,
@@ -161,159 +196,271 @@
 
     /* Portrait Mode Adjustments - BIG for nightstand */
     @media screen and (orientation: portrait) {
-      .day-time-box {
-        flex-direction: column;
-        padding: 5vh 5vw;
-        width: 100%;
+      body, html {
+        padding: 1vh 2vw;
+        justify-content: flex-start;
+        overflow-y: auto;
       }
 
-      .day {
-        margin-bottom: 3vh;
-        font-size: 12vw;
+      .day-time-box {
+        flex-direction: column;
+        padding: 2vh 2vw;
+        width: 100%;
+        min-height: auto;
+      }
+
+      .day-name {
+        font-size: 14vw;
+        margin: 0.5vh 0;
+      }
+
+      .day-part {
+        font-size: 10vw;
+        margin: 0.5vh 0;
       }
 
       .time {
-        font-size: 20vw;
-        margin: 4vh 0;
+        font-size: 22vw;
+        margin: 2vh 0;
+        padding: 0 2vw;
       }
 
-      .date {
+      .date-month {
+        font-size: 10vw;
+        margin: 0.5vh 0;
+      }
+
+      .date-day {
+        font-size: 16vw;
+        margin: 0.5vh 0;
+      }
+
+      .date-year {
         font-size: 8vw;
-        margin: 2vh 0;
+        margin: 0.5vh 0;
       }
 
       .prayer-info {
         flex-direction: column;
-        margin: 4vh 5vw;
+        margin: 2vh 2vw;
         padding: 0;
         width: 100%;
       }
 
       .current-prayer-name,
       .current-prayer-time {
-        font-size: 10vw;
-        margin: 1vh 0.5vw;
+        font-size: 12vw;
+        margin: 1vh 0;
+        white-space: normal;
       }
 
       .next-prayer-container {
-        margin-top: 4vh;
+        margin-top: 3vh;
         margin-left: 0;
-        padding: 2vh 8vw;
+        padding: 2vh 6vw;
         border-width: 4px;
+        white-space: normal;
       }
 
       .next-prayer-name,
       .next-prayer-time {
-        font-size: 9vw;
+        font-size: 11vw;
         margin: 0 2vw;
+        white-space: normal;
       }
 
       .prayer-time-break {
         margin: 2vh 0;
-        font-size: 8vw;
+        font-size: 10vw;
       }
     }
 
     /* Landscape Mode Adjustments - BIG for nightstand */
     @media screen and (orientation: landscape) {
       body, html {
-        padding: 2vh 4vw;
-        justify-content: space-evenly;
+        padding: 1vh 2vw;
+        justify-content: center;
+        overflow-y: auto;
       }
 
       .day-time-box {
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: space-around;
         align-items: center;
-        padding: 3vh 5vw;
-        width: 98%;
-        margin: 2vh auto;
+        padding: 2vh 3vw;
+        width: 100%;
+        margin: 1vh auto;
+        flex-wrap: wrap;
       }
 
-      .day {
-        font-size: 6vw;
-        margin-bottom: 0;
-        white-space: nowrap;
+      .day-container {
+        flex: 1;
+        min-width: 150px;
+        margin: 0 1vw;
+      }
+
+      .day-name {
+        font-size: 5vw;
+        margin: 0.2vh 0;
+      }
+
+      .day-part {
+        font-size: 4vw;
+        margin: 0.2vh 0;
       }
 
       .time {
-        font-size: 12vw;
-        margin: 0 3vw;
+        font-size: 10vw;
+        margin: 0 2vw;
         line-height: 1.2;
+        flex: 2;
       }
 
-      .date {
-        font-size: 5vw;
-        margin: 0 2vw;
-        white-space: nowrap;
+      .date-container {
+        flex: 1;
+        min-width: 150px;
+        margin: 0 1vw;
+      }
+
+      .date-month {
+        font-size: 4vw;
+        margin: 0.2vh 0;
+      }
+
+      .date-day {
+        font-size: 6vw;
+        margin: 0.2vh 0;
+      }
+
+      .date-year {
+        font-size: 3.5vw;
+        margin: 0.2vh 0;
       }
 
       .prayer-info {
-        margin: 3vh 3vw;
-        font-size: 4vw;
-        width: 98%;
-        padding: 2vh 3vw;
+        margin: 2vh 2vw;
+        width: 100%;
+        padding: 1vh 2vw;
         flex-wrap: wrap;
+        justify-content: center;
       }
 
       .current-prayer-name,
       .current-prayer-time {
-        font-size: 5vw;
-        margin: 0 2vw;
+        font-size: 4.5vw;
+        margin: 0 1vw;
         white-space: nowrap;
       }
 
       .next-prayer-container {
-        margin-left: 3vw;
-        padding: 1.5vh 3vw;
-        white-space: nowrap;
+        margin-left: 2vw;
+        padding: 1vh 2.5vw;
         border-width: 3px;
       }
 
       .next-prayer-name,
       .next-prayer-time {
-        font-size: 5.5vw;
-        margin: 0 1.5vw;
+        font-size: 5vw;
+        margin: 0 1vw;
       }
 
       .prayer-time-break {
-        font-size: 4.5vw;
-        margin: 0 2vw;
+        font-size: 4vw;
+        margin: 0 1.5vw;
       }
     }
 
-    /* Extra small landscape screens - still big enough */
+    /* Extra small landscape screens */
     @media screen and (orientation: landscape) and (max-height: 500px) {
       .day-time-box {
-        padding: 1.5vh 3vw;
+        padding: 1vh 2vw;
       }
 
-      .time {
-        font-size: 10vw;
-      }
-
-      .day {
-        font-size: 5vw;
-      }
-
-      .date {
+      .day-name {
         font-size: 4vw;
       }
 
+      .day-part {
+        font-size: 3vw;
+      }
+
+      .time {
+        font-size: 8vw;
+      }
+
+      .date-month {
+        font-size: 3vw;
+      }
+
+      .date-day {
+        font-size: 5vw;
+      }
+
+      .date-year {
+        font-size: 2.5vw;
+      }
+
       .next-prayer-container {
-        padding: 1vh 2vw;
+        padding: 0.5vh 1.5vw;
+      }
+    }
+
+    /* Large screens (laptops/desktops) */
+    @media screen and (min-width: 1024px) {
+      .day-time-box {
+        max-width: 1400px;
+      }
+
+      .day-name {
+        font-size: 4vw;
+      }
+
+      .day-part {
+        font-size: 3vw;
+      }
+
+      .time {
+        font-size: 8vw;
+      }
+
+      .date-month {
+        font-size: 3vw;
+      }
+
+      .date-day {
+        font-size: 5vw;
+      }
+
+      .date-year {
+        font-size: 2.5vw;
+      }
+
+      .current-prayer-name,
+      .current-prayer-time {
+        font-size: 3.5vw;
+      }
+
+      .next-prayer-name,
+      .next-prayer-time {
+        font-size: 4vw;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Green Dot Indicator -->
   <div id="status-indicator" class="status-indicator" onclick="location.reload()" title="Using cached data - Click to reload"></div>
 
   <div class="day-time-box">
-    <div class="day" id="day"></div>
+    <div class="day-container">
+      <div class="day-name" id="day-name"></div>
+      <div class="day-part" id="day-part"></div>
+    </div>
     <div class="time" id="clock"></div>
-    <div class="date" id="date"></div>
+    <div class="date-container">
+      <div class="date-month" id="date-month"></div>
+      <div class="date-day" id="date-day"></div>
+      <div class="date-year" id="date-year"></div>
+    </div>
   </div>
 
   <div class="prayer-info">
@@ -388,42 +535,43 @@
       return hours >= 12 ? 'pm' : 'am';
     }
 
-    function updateClock() {
-      const clockElement = document.getElementById('clock');
-      const dateElement = document.getElementById('date');
-      const dayElement = document.getElementById('day');
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-      const ampm = am_pm(hours);
-      const hour12 = hours % 12 || 12;
-      
-      // Add seconds for more dynamic feel (optional)
-      const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds} ${ampm}`;
-      
-      let partOfDay = hours < 12 ? 'Morning' : (hours < 18 ? 'Afternoon' : 'Evening');
-      clockElement.textContent = formattedTime;
-      
-      const formattedDay = now.toLocaleDateString('en-US', {
-        weekday: 'long'
-      });
-      const formattedDate = now.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-      
-      dayElement.textContent = `${formattedDay} ${partOfDay},`;
-      dateElement.textContent = formattedDate;
-      
-      // Check if day changed
-      const today = now.toDateString();
-      if (lastFetchDate !== today) {
-        fetchPrayerTimes();
-      }
-    }
-
+   function updateClock() {
+  const clockElement = document.getElementById('clock');
+  const dayNameElement = document.getElementById('day-name');
+  const dayPartElement = document.getElementById('day-part');
+  const dateMonthElement = document.getElementById('date-month');
+  const dateDayElement = document.getElementById('date-day');
+  const dateYearElement = document.getElementById('date-year');
+  
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+  const ampm = am_pm(hours);
+  const hour12 = hours % 12 || 12;
+  
+  const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds} ${ampm}`;
+  
+  let partOfDay = hours < 12 ? 'Morning' : (hours < 18 ? 'Afternoon' : 'Evening');
+  clockElement.textContent = formattedTime;
+  
+  const formattedDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const formattedMonth = now.toLocaleDateString('en-US', { month: 'long' });
+  const formattedDate = now.getDate();
+  const formattedYear = now.getFullYear();
+  
+  dayNameElement.textContent = formattedDay;
+  dayPartElement.textContent = partOfDay;
+  dateMonthElement.textContent = formattedMonth;
+  dateDayElement.textContent = formattedDate;
+  dateYearElement.textContent = formattedYear;
+  
+  // Check if day changed
+  const today = now.toDateString();
+  if (lastFetchDate !== today) {
+    fetchPrayerTimes();
+  }
+}
     function startClock() {
       updateClock();
       setInterval(updateClock, 1000); // Update every second for smoother appearance
