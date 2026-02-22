@@ -272,8 +272,7 @@
         margin: 0 3vw;
       }
     }
-
-    /* Landscape Mode Adjustments - EVERYTHING MASSIVE */
+        /* Landscape Mode Adjustments - EVERYTHING MASSIVE with fixed first prayer line */
     @media screen and (orientation: landscape) {
       body, html {
         padding: 0;
@@ -355,13 +354,21 @@
         align-items: center;
         flex: 1;
         min-height: 0;
+        flex-direction: row; /* Ensure horizontal layout */
       }
 
+      /* Fix for first prayer - force same line */
       .current-prayer-name,
       .current-prayer-time {
         font-size: 5vw;
         margin: 0 1vw;
-        white-space: nowrap;
+        white-space: nowrap; /* Prevent wrapping */
+        display: inline-block; /* Ensure inline behavior */
+      }
+
+      /* Keep the comma with the time */
+      .current-prayer-time {
+        margin-left: 0; /* Remove left margin to keep close to comma */
       }
 
       .next-prayer-container {
@@ -369,20 +376,24 @@
         padding: 1.5vh 3vw;
         border-width: 4px;
         border-radius: 50px;
+        white-space: nowrap; /* Prevent wrapping */
+        display: inline-flex; /* Keep as flex but inline */
       }
 
       .next-prayer-name,
       .next-prayer-time {
         font-size: 5.5vw;
         margin: 0 1vw;
+        white-space: nowrap; /* Prevent wrapping */
       }
 
       .prayer-time-break {
         font-size: 4.5vw;
         margin: 0 1.5vw;
+        white-space: nowrap; /* Prevent wrapping */
+        display: inline-block; /* Keep on same line */
       }
     }
-
     /* Extra small landscape screens - still MASSIVE */
     @media screen and (orientation: landscape) and (max-height: 500px) {
       .day-name {
