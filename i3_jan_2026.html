@@ -272,6 +272,7 @@
       }
     }
       /* Landscape Mode Adjustments - EVERYTHING MASSIVE with proper stacking */
+    /* Landscape Mode Adjustments - FIXED: Single column layout */
     @media screen and (orientation: landscape) {
       body, html {
         padding: 0;
@@ -344,38 +345,48 @@
         line-height: 1.2;
       }
 
+      /* FIXED: Single column layout for prayer info */
       .prayer-info {
-        margin: 2vh 2vw;
+        margin: 2vh auto;
         width: 100%;
         padding: 2vh 2vw;
-        flex-wrap: wrap; /* Allow wrapping */
+        display: flex;
+        flex-direction: column; /* Force single column */
         justify-content: center;
         align-items: center;
         flex: 1;
         min-height: 0;
-        flex-direction: column; /* Stack vertically */
       }
 
-      /* First line - current prayer */
+      /* Row 1: Current prayer name and time on SAME line */
+      .current-prayer-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin: 1vh 0;
+        width: 100%;
+      }
+
       .current-prayer-name,
       .current-prayer-time {
         font-size: 5vw;
-        margin: 0.5vh 1vw;
+        margin: 0 1vw;
         white-space: nowrap;
         display: inline-block;
       }
 
-      /* Second line - arrow */
+      /* Row 2: Arrow alone */
       .prayer-time-break {
         font-size: 5vw;
         margin: 1vh 0;
         white-space: nowrap;
-        display: block; /* Make it take full width */
+        display: block;
         width: 100%;
         text-align: center;
       }
 
-      /* Third line - next prayer container */
+      /* Row 3: Next prayer container */
       .next-prayer-container {
         margin: 1vh 0;
         padding: 1.5vh 3vw;
@@ -384,6 +395,7 @@
         white-space: nowrap;
         display: inline-flex;
         justify-content: center;
+        align-items: center;
       }
 
       .next-prayer-name,
@@ -445,9 +457,11 @@
     </div>
   </div>
 
-  <div class="prayer-info">
-    <p id="current-prayer-name" class="current-prayer-name"></p>
-    <p id="current-prayer-time" class="current-prayer-time"></p>
+    <div class="prayer-info">
+    <div class="current-prayer-row">
+      <p id="current-prayer-name" class="current-prayer-name"></p>
+      <p id="current-prayer-time" class="current-prayer-time"></p>
+    </div>
     <p id="prayer-time-break" class="prayer-time-break"></p>
     <div id="next-prayer-container" class="next-prayer-container">
       <p id="next-prayer-name" class="next-prayer-name"></p>
