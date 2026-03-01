@@ -277,7 +277,7 @@ html {
   }
 }
 
-/* Landscape Mode Adjustments */
+/* Landscape Mode Adjustments - TIGHTER SPACING */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -290,7 +290,7 @@ html {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    padding: 1vh 1vw; /* Reduced */
+    padding: 1vh 1vw;
     width: 100%;
     margin: 0;
     flex-wrap: nowrap;
@@ -306,14 +306,14 @@ html {
 
   .day-name {
     font-size: 6vw;
-    margin: 0.3vh 0; /* Reduced */
-    line-height: 1.2;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .day-part {
     font-size: 5vw;
-    margin: 0.3vh 0;
-    line-height: 1.2;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .time {
@@ -333,26 +333,26 @@ html {
 
   .date-month {
     font-size: 5vw;
-    margin: 0.3vh 0;
-    line-height: 1.2;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .date-day {
     font-size: 8vw;
-    margin: 0.3vh 0;
-    line-height: 1.2;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .date-year {
     font-size: 4vw;
-    margin: 0.3vh 0;
-    line-height: 1.2;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .prayer-info {
-    margin: 3vh auto; /* Increased */
+    margin: 0.5vh auto; /* REDUCED from 3vh */
     width: 100%;
-    padding: 3vh 2vw; /* Increased */
+    padding: 0.5vh 2vw; /* REDUCED from 3vh */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -366,32 +366,34 @@ html {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 2vh 0; /* Increased */
+    margin: 0.3vh 0; /* REDUCED from 2vh */
     width: 100%;
   }
 
   .current-prayer-name,
   .current-prayer-time {
-    font-size: 6vw; /* Slightly increased from 5vw */
-    margin: 0 1vw;
+    font-size: 6vw;
+    margin: 0 0.5vw; /* REDUCED from 1vw */
     white-space: nowrap;
     display: inline-block;
+    line-height: 1.1; /* TIGHTER line height */
   }
 
   .prayer-time-break {
-    font-size: 6vw; /* Increased from 5vw */
-    margin: 2vh 0; /* Increased */
+    font-size: 5vw; /* REDUCED from 6vw */
+    margin: 0.2vh 0; /* REDUCED from 2vh */
     white-space: nowrap;
     display: block;
     width: 100%;
     text-align: center;
+    line-height: 1; /* TIGHTER line height */
   }
 
   .next-prayer-container {
-    margin: 2vh 0; /* Increased */
-    padding: 2vh 4vw; /* Increased */
-    border-width: 4px;
-    border-radius: 50px;
+    margin: 0.3vh 0; /* REDUCED from 2vh */
+    padding: 0.8vh 3vw; /* REDUCED from 2vh 4vw */
+    border-width: 3px; /* SLIGHTLY THINNER */
+    border-radius: 40px; /* SLIGHTLY SMALLER */
     white-space: nowrap;
     display: inline-flex;
     justify-content: center;
@@ -400,41 +402,56 @@ html {
 
   .next-prayer-name,
   .next-prayer-time {
-    font-size: 6.5vw; /* Increased from 5.5vw */
-    margin: 0 1.5vw; /* Increased */
+    font-size: 5.5vw; /* SLIGHTLY REDUCED from 6.5vw */
+    margin: 0 1vw; /* REDUCED from 1.5vw */
     white-space: nowrap;
+    line-height: 1.1; /* TIGHTER line height */
   }
 }
 
-/* Extra small landscape screens */
+/* Extra small landscape screens - even tighter */
 @media screen and (orientation: landscape) and (max-height: 500px) {
   .day-name {
     font-size: 5vw;
+    margin: 0.1vh 0;
   }
   .day-part {
     font-size: 4vw;
+    margin: 0.1vh 0;
   }
   .time {
     font-size: 12vw;
   }
   .date-month {
     font-size: 4vw;
+    margin: 0.1vh 0;
   }
   .date-day {
     font-size: 7vw;
+    margin: 0.1vh 0;
   }
   .date-year {
     font-size: 3.5vw;
+    margin: 0.1vh 0;
   }
   .current-prayer-name,
   .current-prayer-time {
-    font-size: 5.5vw; /* Increased from 4.5vw */
+    font-size: 5vw; /* REDUCED from 5.5vw */
+    margin: 0 0.3vw;
+  }
+  .prayer-time-break {
+    font-size: 4.5vw;
+    margin: 0.1vh 0;
   }
   .next-prayer-name,
   .next-prayer-time {
-    font-size: 6vw; /* Increased from 5vw */
+    font-size: 5vw; /* REDUCED from 6vw */
+    margin: 0 0.5vw;
   }
   .next-prayer-container {
-    padding: 1.5vh 3vw; /* Increased */
+    padding: 0.5vh 2vw; /* REDUCED from 1.5vh 3vw */
+    border-width: 2px;
+    border-radius: 30px;
   }
 }
+
