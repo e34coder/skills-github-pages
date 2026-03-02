@@ -1,4 +1,4 @@
-// i4/script.js
+// script.js - Complete file with multi-day prayer times, status border, and day icon
 let userLatitude, userLongitude;
 let prayerTimesCache = {}; // Format: { "2024-01-05": [...], "2024-01-06": [...], ... }
 let currentDateKey = null;
@@ -270,6 +270,123 @@ function am_pm(hours) {
   return hours >= 12 ? 'pm' : 'am';
 }
 
+function updateDayIcon() {
+  const canvas = document.getElementById('dayIcon');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 100, 100);
+  
+  const now = new Date();
+  const hours = now.getHours();
+  
+  // Morning: 6am to 12pm (noon)
+  // Afternoon: 12pm to 6pm
+  // Evening: 6pm to 6am
+  if (hours >= 6 && hours < 12) {
+    // Morning - sun clipped to top half
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, 100, 50);
+    ctx.clip();
+    
+    ctx.beginPath();
+    ctx.arc(50, 40, 25, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FFB347';
+    ctx.fill();
+    ctx.strokeStyle = '#FF8C00';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    ctx.strokeStyle = '#FFB347';
+    ctx.lineWidth = 2;
+    
+    for (let i = 0; i < 8; i++) {
+      let angle = (i / 8) * (2 * Math.PI);
+      let x1 = 50 + Math.cos(angle) * 28;
+      let y1 = 40 + Math.sin(angle) * 28;
+      let x2 = 50 + Math.cos(angle) * 42;
+      let y2 = 40 + Math.sin(angle) * 42;
+      
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    
+    ctx.restore();
+    
+    ctx.beginPath();
+    ctx.moveTo(0, 50);
+    ctx.lineTo(100, 50);
+    ctx.strokeStyle = '#CCCCCC';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+  } else if (hours >= 12 && hours < 18) {
+    // Afternoon - full sun
+    ctx.beginPath();
+    ctx.arc(50, 40, 25, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FFD700';
+    ctx.fill();
+    ctx.strokeStyle = '#FF8C00';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 2;
+    
+    for (let i = 0; i < 8; i++) {
+      let angle = (i / 8) * (2 * Math.PI);
+      let x1 = 50 + Math.cos(angle) * 28;
+      let y1 = 40 + Math.sin(angle) * 28;
+      let x2 = 50 + Math.cos(angle) * 42;
+      let y2 = 40 + Math.sin(angle) * 42;
+      
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    
+  } else {
+    // Night - moon and stars
+    ctx.beginPath();
+    ctx.arc(60, 40, 22, 0, 2 * Math.PI);
+    ctx.fillStyle = '#F0F0F0';
+    ctx.fill();
+    ctx.strokeStyle = '#C0C0C0';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Crescent cutout
+    ctx.beginPath();
+    ctx.arc(43, 35, 18, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.stroke();
+    
+    // Stars
+    ctx.fillStyle = '#C0C0C0';
+    ctx.beginPath();
+    ctx.arc(20, 20, 2, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(80, 70, 2, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(30, 70, 1.5, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(70, 20, 1.5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
+
 function updateClock() {
   const clockElement = document.getElementById('clock');
   const dayNameElement = document.getElementById('day-name');
@@ -300,6 +417,9 @@ function updateClock() {
   dateMonthElement.textContent = formattedMonth;
   dateDayElement.textContent = formattedDate;
   dateYearElement.textContent = formattedYear;
+  
+  // Update the icon
+  updateDayIcon();
   
   // Check if day changed (midnight)
   const todayKey = getDateKey(now);
@@ -340,6 +460,7 @@ function updatePrayerInfo() {
     }
   }
   
+  // Handle case when current time is before first prayer of the day
   if (!currentPrayer) {
     currentPrayer = currentDayData[currentDayData.length - 1].name;
     currentPrayerTime = currentDayData[currentDayData.length - 1].time;
@@ -360,10 +481,6 @@ function updatePrayerInfo() {
   document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
   document.getElementById('next-prayer-name').textContent = nextPrayer;
   document.getElementById('next-prayer-time').textContent = formatPrayerTime(nextPrayerTime);
-  
-  const breakElement = document.getElementById('prayer-time-break');
-  breakElement.textContent = '→';
-  breakElement.style.color = '#FFFFFF';
 }
 
 function startClock() {
