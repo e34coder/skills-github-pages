@@ -357,7 +357,7 @@ function updatePrayerInfo() {
   };
   
   document.getElementById('current-prayer-name').textContent = currentPrayer;
-  document.getElementById('current-prayer-time').textContent = `${formatPrayerTime(currentPrayerTime)},`;
+  document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
   document.getElementById('next-prayer-name').textContent = nextPrayer;
   document.getElementById('next-prayer-time').textContent = formatPrayerTime(nextPrayerTime);
   
