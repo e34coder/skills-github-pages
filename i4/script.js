@@ -1,4 +1,4 @@
-// script.js - Complete file with multi-day prayer times, status border, and day icon
+// script.js - Complete file with null checks
 let userLatitude, userLongitude;
 let prayerTimesCache = {}; // Format: { "2024-01-05": [...], "2024-01-06": [...], ... }
 let currentDateKey = null;
@@ -33,6 +33,8 @@ function cacheData() {
 }
 
 function updateStatusBorder(status) {
+  if (!statusBorder) return;
+  
   // Remove all status classes
   statusBorder.classList.remove('status-green', 'status-yellow', 'status-red');
   
@@ -275,6 +277,8 @@ function updateDayIcon() {
   if (!canvas) return;
   
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
   ctx.clearRect(0, 0, 100, 100);
   
   const now = new Date();
@@ -362,13 +366,11 @@ function updateDayIcon() {
     // Crescent cutout
     ctx.beginPath();
     ctx.arc(43, 35, 18, 0, 2 * Math.PI);
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = '#000000';
     ctx.fill();
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.stroke();
     
     // Stars
-    ctx.fillStyle = '#C0C0C0';
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.arc(20, 20, 2, 0, 2 * Math.PI);
     ctx.fill();
@@ -388,6 +390,7 @@ function updateDayIcon() {
 }
 
 function updateClock() {
+  // Get all elements with null checks
   const clockElement = document.getElementById('clock');
   const dayNameElement = document.getElementById('day-name');
   const dayPartElement = document.getElementById('day-part');
@@ -405,18 +408,20 @@ function updateClock() {
   const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds} ${ampm}`;
   
   let partOfDay = hours < 12 ? 'Morning' : (hours < 18 ? 'Afternoon' : 'Evening');
-  clockElement.textContent = formattedTime;
+  
+  // Update elements only if they exist
+  if (clockElement) clockElement.textContent = formattedTime;
   
   const formattedDay = now.toLocaleDateString('en-US', { weekday: 'long' });
   const formattedMonth = now.toLocaleDateString('en-US', { month: 'long' });
   const formattedDate = now.getDate();
   const formattedYear = now.getFullYear();
   
-  dayNameElement.textContent = formattedDay;
-  dayPartElement.textContent = partOfDay;
-  dateMonthElement.textContent = formattedMonth;
-  dateDayElement.textContent = formattedDate;
-  dateYearElement.textContent = formattedYear;
+  if (dayNameElement) dayNameElement.textContent = formattedDay;
+  if (dayPartElement) dayPartElement.textContent = partOfDay;
+  if (dateMonthElement) dateMonthElement.textContent = formattedMonth;
+  if (dateDayElement) dateDayElement.textContent = formattedDate;
+  if (dateYearElement) dateYearElement.textContent = formattedYear;
   
   // Update the icon
   updateDayIcon();
@@ -431,6 +436,18 @@ function updateClock() {
 
 function updatePrayerInfo() {
   if (!currentDayData) return;
+  
+  // Get elements with null checks
+  const currentPrayerNameEl = document.getElementById('current-prayer-name');
+  const currentPrayerTimeEl = document.getElementById('current-prayer-time');
+  const nextPrayerNameEl = document.getElementById('next-prayer-name');
+  const nextPrayerTimeEl = document.getElementById('next-prayer-time');
+  
+  // If any required elements are missing, return
+  if (!currentPrayerNameEl || !currentPrayerTimeEl || !nextPrayerNameEl || !nextPrayerTimeEl) {
+    console.error('Prayer info elements not found');
+    return;
+  }
   
   const now = new Date();
   const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
@@ -477,10 +494,10 @@ function updatePrayerInfo() {
     return `${formattedHour}:${minute} ${ampm}`;
   };
   
-  document.getElementById('current-prayer-name').textContent = currentPrayer;
-  document.getElementById('current-prayer-time').textContent = formatPrayerTime(currentPrayerTime);
-  document.getElementById('next-prayer-name').textContent = nextPrayer;
-  document.getElementById('next-prayer-time').textContent = formatPrayerTime(nextPrayerTime);
+  currentPrayerNameEl.textContent = currentPrayer;
+  currentPrayerTimeEl.textContent = formatPrayerTime(currentPrayerTime);
+  nextPrayerNameEl.textContent = nextPrayer;
+  nextPrayerTimeEl.textContent = formatPrayerTime(nextPrayerTime);
 }
 
 function startClock() {
@@ -489,6 +506,11 @@ function startClock() {
 }
 
 function initialize() {
+  console.log('Initializing...');
+  
+  // Get status border element
+  statusBorder = document.getElementById('status-border');
+  
   loadCachedData();
   
   // Try to use cached data immediately
@@ -510,12 +532,18 @@ function initialize() {
   }, 60000);
 }
 
+// Make sure DOM is fully loaded before initializing
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initialize);
+} else {
+  // DOM is already loaded
+  initialize();
+}
+
 window.addEventListener('online', () => {
   console.log('Connection restored - attempting to fetch');
   fetchNextFiveDays();
 });
-
-window.onload = initialize;
 
 window.addEventListener('beforeunload', () => {
   if (fetchRetryTimeout) {
