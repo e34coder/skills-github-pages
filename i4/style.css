@@ -1,4 +1,4 @@
-/* style.css - Complete file with all fixes */
+/* style.css - Complete file with arrow removed, no text shadows, and icons */
 * {
   margin: 0;
   padding: 0;
@@ -23,7 +23,7 @@ html {
 /* Status border - no dot, just the bottom border */
 .day-time-box {
   border-bottom: 4px solid #00ff00;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  /* No text shadow */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -38,26 +38,21 @@ html {
 /* Status colors */
 .day-time-box.status-green {
   border-bottom: 6px solid #00ff00;
-  box-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
 }
 
 .day-time-box.status-yellow {
   border-bottom: 6px solid #ffff00;
-  box-shadow: 0 0 30px rgba(255, 255, 0, 0.7);
 }
 
 .day-time-box.status-red {
   border-bottom: 6px solid #ff0000;
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
 }
 
 .time {
   font-size: 25vw;
   font-weight: bold;
   color: #FFFFFF;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
-               0 0 20px rgba(255, 255, 255, 0.3),
-               0 0 30px rgba(255, 255, 255, 0.2);
+  /* No text shadows */
   background: linear-gradient(45deg, #ffffff, #f0f0f0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -97,10 +92,26 @@ html {
   font-weight: bold;
 }
 
+/* Icon container - NEW */
+.day-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5vh 0 1vh 0;
+}
+
+.day-icon {
+  width: 15vw;
+  height: 15vw;
+  max-width: 80px;
+  max-height: 80px;
+}
+
 .day-part {
   font-size: 10vw;
   color: #C7C8C8;
   line-height: 1.2;
+  margin-top: 0.5vh;
 }
 
 .date-container {
@@ -133,17 +144,18 @@ html {
 .prayer-info {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly; /* Even vertical spacing */
   align-items: center;
-  margin: 4vh 0;
-  padding: 4vh 5vw;
+  margin: 0;
+  padding: 2vh 5vw;
   width: 100%;
   flex: 2;
+  height: 100%;
 }
 
 .current-prayer-name,
 .current-prayer-time {
-  margin: 1.5vh 0;
+  margin: 0;
   color: #FFFFFF;
   font-size: 12vw;
   font-weight: bold;
@@ -155,8 +167,14 @@ html {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin: 2vh 0;
+  margin: 0;
   width: 100%;
+  border: 5px solid #FFFFFF;
+  border-radius: 60px;
+  padding: 3vh 8vw;
+  background-color: rgba(255, 255, 255, 0.15);
+  white-space: normal;
+  width: 90%;
 }
 
 .current-prayer-name,
@@ -167,32 +185,31 @@ html {
   display: inline-block;
 }
 
+/* Arrow removed - prayer-time-break class removed from HTML */
+
 .next-prayer-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: 5px solid #FFFFFF;
-  border-radius: 60px;
-  padding: 3vh 8vw;
-  margin: 4vh 0;
-  background-color: rgba(255, 255, 255, 0.15);
-  white-space: normal;
-  width: 90%;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  background-color: transparent;
+  border: none;
 }
 
 .next-prayer-name,
 .next-prayer-time {
-  color: #FFFFFF;
-  margin: 0 3vw;
-  font-size: 11vw;
-  font-weight: bold;
+  color: #C7C8C8;
+  margin: 0 2vw;
+  font-size: 10vw;
+  font-weight: normal;
 }
 
-.prayer-time-break {
-  margin: 3vh 0;
+.next-prayer-name {
+  font-weight: bold;
   color: #FFFFFF;
-  font-size: 10vw;
 }
 
 /* Portrait Mode Adjustments */
@@ -216,9 +233,14 @@ html {
     margin: 0.5vh 0;
   }
 
+  .day-icon {
+    width: 20vw;
+    height: 20vw;
+  }
+
   .day-part {
     font-size: 14vw;
-    margin: 0.5vh 0;
+    margin: 1vh 0;
   }
 
   .time {
@@ -244,27 +266,23 @@ html {
 
   .prayer-info {
     flex-direction: column;
-    margin: 5vh 2vw;
-    padding: 5vh 2vw;
+    margin: 2vh 2vw;
+    padding: 2vh 2vw;
     width: 100%;
     min-height: auto;
+    justify-content: space-evenly;
   }
 
   .current-prayer-name,
   .current-prayer-time {
     font-size: 15vw;
-    margin: 3vh 0;
+    margin: 0;
     white-space: normal;
   }
 
-  .prayer-time-break {
-    margin: 4vh 0;
-    font-size: 14vw;
-  }
-
-  .next-prayer-container {
-    margin: 5vh 0;
-    padding: 5vh 8vw;
+  .current-prayer-row {
+    margin: 1vh 0;
+    padding: 4vh 8vw;
     border-width: 6px;
     border-radius: 80px;
     width: 95%;
@@ -272,12 +290,16 @@ html {
 
   .next-prayer-name,
   .next-prayer-time {
-    font-size: 14vw;
-    margin: 0 3vw;
+    font-size: 13vw;
+    margin: 1vh 3vw;
+  }
+  
+  .next-prayer-container {
+    margin: 1vh 0;
   }
 }
 
-/* Landscape Mode Adjustments - NIGHTSTAND OPTIMIZED with FIXED SPACING */
+/* Landscape Mode Adjustments - EVEN SPACING */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -305,6 +327,9 @@ html {
     min-width: 180px;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .day-name {
@@ -313,8 +338,15 @@ html {
     line-height: 1.1;
   }
 
+  .day-icon {
+    width: 8vw;
+    height: 8vw;
+    max-width: 60px;
+    max-height: 60px;
+  }
+
   .day-part {
-    font-size: 3.8vw;
+    font-size: 3.5vw;
     margin: 0.2vh 0;
     line-height: 1.1;
   }
@@ -325,9 +357,7 @@ html {
     line-height: 1;
     flex: 2;
     padding: 0;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7),
-                 0 0 30px rgba(255, 255, 255, 0.5),
-                 0 0 45px rgba(255, 255, 255, 0.3);
+    /* No text shadows */
   }
 
   .date-container {
@@ -359,30 +389,29 @@ html {
   .prayer-info {
     margin: 0;
     width: 100%;
-    padding: 0.5vh 2vw;
+    padding: 1vh 2vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly; /* Even vertical spacing */
     align-items: center;
     flex: 1;
     min-height: 0;
     max-height: 70vh;
   }
 
-  /* Current prayer with border - moved DOWN from the green line */
+  /* Current prayer with border */
   .current-prayer-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 0.8vh 0 0.3vh 0;
+    margin: 0;
     width: auto;
     border: 4px solid #FFFFFF;
     border-radius: 50px;
-    padding: 1.2vh 4vw;
+    padding: 1.5vh 4vw;
     background-color: rgba(255, 255, 255, 0.15);
     white-space: nowrap;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
   }
 
   .current-prayer-name,
@@ -399,22 +428,11 @@ html {
     margin-left: 0.3vw;
   }
 
-  .prayer-time-break {
-    font-size: 5vw;
-    margin: 0.2vh 0;
-    white-space: nowrap;
-    display: block;
-    width: 100%;
-    text-align: center;
-    line-height: 1;
-    font-weight: bold;
-    color: #FFFFFF;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  }
+  /* Arrow completely removed */
 
   /* Next prayer - no border, just text */
   .next-prayer-container {
-    margin: 0.2vh 0 0.5vh 0;
+    margin: 0;
     padding: 0.5vh 2vw;
     white-space: nowrap;
     display: inline-flex;
@@ -422,7 +440,6 @@ html {
     align-items: center;
     background-color: transparent;
     border: none;
-    box-shadow: none;
   }
 
   .next-prayer-name,
@@ -441,7 +458,7 @@ html {
   }
 }
 
-/* Extra small landscape screens - adjusted for nightstand */
+/* Extra small landscape screens */
 @media screen and (orientation: landscape) and (max-height: 500px) {
   .day-time-box {
     padding: 0.5vh 2vw;
@@ -452,34 +469,45 @@ html {
     font-size: 4vw;
     margin: 0.1vh 0;
   }
+
+  .day-icon {
+    width: 6vw;
+    height: 6vw;
+  }
+  
   .day-part {
-    font-size: 3.5vw;
+    font-size: 3.2vw;
     margin: 0.1vh 0;
   }
+  
   .time {
     font-size: 12vw;
   }
+  
   .date-month {
     font-size: 3.5vw;
     margin: 0.1vh 0;
   }
+  
   .date-day {
     font-size: 6.5vw;
     margin: 0.1vh 0;
   }
+  
   .date-year {
     font-size: 3vw;
     margin: 0.1vh 0;
   }
   
   .prayer-info {
-    padding: 0.2vh 2vw;
+    padding: 0.5vh 2vw;
     max-height: 75vh;
+    justify-content: space-evenly;
   }
   
   .current-prayer-row {
-    margin: 0.5vh 0 0.2vh 0;
-    padding: 0.8vh 3vw;
+    margin: 0;
+    padding: 1vh 3vw;
     border-radius: 40px;
     border-width: 3px;
   }
@@ -489,13 +517,8 @@ html {
     font-size: 5.5vw;
   }
   
-  .prayer-time-break {
-    font-size: 4.5vw;
-    margin: 0.1vh 0;
-  }
-  
   .next-prayer-container {
-    margin: 0.1vh 0 0.3vh 0;
+    margin: 0;
     padding: 0.3vh 1.5vw;
   }
   
