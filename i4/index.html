@@ -10,6 +10,10 @@
   <div class="day-time-box" id="status-border">
     <div class="day-container">
       <div class="day-name" id="day-name"></div>
+      <!-- Icon container added here -->
+      <div class="day-icon-container">
+        <canvas id="dayIcon" class="day-icon" width="100" height="100"></canvas>
+      </div>
       <div class="day-part" id="day-part"></div>
     </div>
     <div class="time" id="clock"></div>
@@ -21,11 +25,11 @@
   </div>
 
   <div class="prayer-info">
-   <div class="current-prayer-row">
-  <p id="current-prayer-name" class="current-prayer-name"></p>
-  <p id="current-prayer-time" class="current-prayer-time"></p>
-</div>
-    <p id="prayer-time-break" class="prayer-time-break"></p>
+    <div class="current-prayer-row">
+      <p id="current-prayer-name" class="current-prayer-name"></p>
+      <p id="current-prayer-time" class="current-prayer-time"></p>
+    </div>
+    <!-- Arrow element completely removed -->
     <div id="next-prayer-container" class="next-prayer-container">
       <p id="next-prayer-name" class="next-prayer-name"></p>
       <p id="next-prayer-time" class="next-prayer-time"></p>
