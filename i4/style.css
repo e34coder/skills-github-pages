@@ -1,4 +1,4 @@
-/* i4/style.css */
+/* style.css - Complete file with all fixes */
 * {
   margin: 0;
   padding: 0;
@@ -29,9 +29,9 @@ html {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 3vh 2vw; /* Reduced from 5vh */
+  padding: 3vh 2vw;
   width: 100%;
-  flex: 1.5; /* Reduced from 2 - takes less space */
+  flex: 1.5;
   transition: all 0.3s ease;
 }
 
@@ -66,7 +66,7 @@ html {
   display: inline-block;
   padding: 0;
   line-height: 1;
-  margin: 2vh 0; /* Reduced from 3vh */
+  margin: 2vh 0;
 }
 
 .time::after {
@@ -87,7 +87,7 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1vh 0; /* Reduced from 2vh */
+  margin: 1vh 0;
 }
 
 .day-name {
@@ -108,7 +108,7 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1vh 0; /* Reduced from 2vh */
+  margin: 1vh 0;
 }
 
 .date-month {
@@ -135,15 +135,15 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 4vh 0; /* Increased from 3vh */
-  padding: 4vh 5vw; /* Increased from 3vh */
+  margin: 4vh 0;
+  padding: 4vh 5vw;
   width: 100%;
-  flex: 2; /* Takes more space */
+  flex: 2;
 }
 
 .current-prayer-name,
 .current-prayer-time {
-  margin: 1.5vh 0; /* Increased from 1vh */
+  margin: 1.5vh 0;
   color: #FFFFFF;
   font-size: 12vw;
   font-weight: bold;
@@ -155,7 +155,7 @@ html {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin: 2vh 0; /* Increased */
+  margin: 2vh 0;
   width: 100%;
 }
 
@@ -175,7 +175,7 @@ html {
   border: 5px solid #FFFFFF;
   border-radius: 60px;
   padding: 3vh 8vw;
-  margin: 4vh 0; /* Increased from 3vh */
+  margin: 4vh 0;
   background-color: rgba(255, 255, 255, 0.15);
   white-space: normal;
   width: 90%;
@@ -190,7 +190,7 @@ html {
 }
 
 .prayer-time-break {
-  margin: 3vh 0; /* Increased from 2vh */
+  margin: 3vh 0;
   color: #FFFFFF;
   font-size: 10vw;
 }
@@ -207,13 +207,13 @@ html {
 
   .day-time-box {
     flex-direction: column;
-    padding: 4vh 2vw; /* Reduced */
+    padding: 4vh 2vw;
     width: 100%;
   }
 
   .day-name {
     font-size: 16vw;
-    margin: 0.5vh 0; /* Reduced */
+    margin: 0.5vh 0;
   }
 
   .day-part {
@@ -223,7 +223,7 @@ html {
 
   .time {
     font-size: 28vw;
-    margin: 2vh 0 1vh 0; /* Reduced */
+    margin: 2vh 0 1vh 0;
     padding: 0;
   }
 
@@ -239,13 +239,13 @@ html {
 
   .date-year {
     font-size: 12vw;
-    margin: 0.5vh 0 2vh 0; /* Reduced bottom margin */
+    margin: 0.5vh 0 2vh 0;
   }
 
   .prayer-info {
     flex-direction: column;
-    margin: 5vh 2vw; /* Increased */
-    padding: 5vh 2vw; /* Increased */
+    margin: 5vh 2vw;
+    padding: 5vh 2vw;
     width: 100%;
     min-height: auto;
   }
@@ -253,18 +253,18 @@ html {
   .current-prayer-name,
   .current-prayer-time {
     font-size: 15vw;
-    margin: 3vh 0; /* Increased */
+    margin: 3vh 0;
     white-space: normal;
   }
 
   .prayer-time-break {
-    margin: 4vh 0; /* Increased */
+    margin: 4vh 0;
     font-size: 14vw;
   }
 
   .next-prayer-container {
-    margin: 5vh 0; /* Increased */
-    padding: 5vh 8vw; /* Increased */
+    margin: 5vh 0;
+    padding: 5vh 8vw;
     border-width: 6px;
     border-radius: 80px;
     width: 95%;
@@ -276,50 +276,52 @@ html {
     margin: 0 3vw;
   }
 }
-/* i4/style.css - Updated landscape section for nightstand viewing */
 
-/* Landscape Mode Adjustments - NIGHTSTAND OPTIMIZED */
+/* Landscape Mode Adjustments - NIGHTSTAND OPTIMIZED with FIXED SPACING */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
     margin: 0;
     justify-content: space-between;
     overflow: hidden;
+    height: 100vh;
+    width: 100vw;
   }
 
   .day-time-box {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    padding: 2vh 2vw;
+    padding: 1vh 2vw;
     width: 100%;
     margin: 0;
     flex-wrap: nowrap;
     flex: 0 0 auto;
+    min-height: 25vh;
   }
 
   .day-container {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
     margin: 0;
     padding: 0;
   }
 
   .day-name {
-    font-size: 5vw;
-    margin: 0.5vh 0;
-    line-height: 1.2;
+    font-size: 4.5vw;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .day-part {
-    font-size: 4vw;
-    margin: 0.5vh 0;
-    line-height: 1.2;
+    font-size: 3.8vw;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .time {
-    font-size: 15vw; /* Increased from 14vw */
-    margin: 0 2vw;
+    font-size: 14vw;
+    margin: 0 1vw;
     line-height: 1;
     flex: 2;
     padding: 0;
@@ -330,53 +332,54 @@ html {
 
   .date-container {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
     margin: 0;
     padding: 0;
   }
 
   .date-month {
-    font-size: 4.5vw; /* Increased from 5vw? Actually slightly reduced to balance */
-    margin: 0.5vh 0;
-    line-height: 1.2;
+    font-size: 4vw;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .date-day {
-    font-size: 8vw; /* Increased from 8vw? Actually kept same */
-    margin: 0.5vh 0;
-    line-height: 1.2;
+    font-size: 7.5vw;
+    margin: 0.2vh 0;
+    line-height: 1.1;
     font-weight: bold;
   }
 
   .date-year {
-    font-size: 4vw; /* Increased from 4vw? Actually kept same */
-    margin: 0.5vh 0;
-    line-height: 1.2;
+    font-size: 3.5vw;
+    margin: 0.2vh 0;
+    line-height: 1.1;
   }
 
   .prayer-info {
-    margin: 1vh auto;
+    margin: 0;
     width: 100%;
-    padding: 1vh 3vw;
+    padding: 0.5vh 2vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     flex: 1;
     min-height: 0;
+    max-height: 70vh;
   }
 
-  /* Current prayer with border (moved from next prayer) */
+  /* Current prayer with border - moved DOWN from the green line */
   .current-prayer-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 0.5vh 0;
+    margin: 0.8vh 0 0.3vh 0;
     width: auto;
-    border: 4px solid #FFFFFF; /* Moved border here */
-    border-radius: 60px;
-    padding: 2vh 5vw; /* Increased padding */
+    border: 4px solid #FFFFFF;
+    border-radius: 50px;
+    padding: 1.2vh 4vw;
     background-color: rgba(255, 255, 255, 0.15);
     white-space: nowrap;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
@@ -384,26 +387,26 @@ html {
 
   .current-prayer-name,
   .current-prayer-time {
-    font-size: 7vw; /* Increased from 6vw */
-    margin: 0 1vw;
+    font-size: 6.5vw;
+    margin: 0 0.8vw;
     white-space: nowrap;
     display: inline-block;
-    line-height: 1.2;
+    line-height: 1.1;
     font-weight: bold;
   }
 
   .current-prayer-time {
-    margin-left: 0.5vw;
+    margin-left: 0.3vw;
   }
 
   .prayer-time-break {
-    font-size: 6vw; /* Increased from 5vw */
-    margin: 1vh 0;
+    font-size: 5vw;
+    margin: 0.2vh 0;
     white-space: nowrap;
     display: block;
     width: 100%;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1;
     font-weight: bold;
     color: #FFFFFF;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
@@ -411,25 +414,25 @@ html {
 
   /* Next prayer - no border, just text */
   .next-prayer-container {
-    margin: 0.5vh 0;
-    padding: 1vh 3vw; /* Reduced padding, no border */
+    margin: 0.2vh 0 0.5vh 0;
+    padding: 0.5vh 2vw;
     white-space: nowrap;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    background-color: transparent; /* No background */
-    border: none; /* No border */
+    background-color: transparent;
+    border: none;
     box-shadow: none;
   }
 
   .next-prayer-name,
   .next-prayer-time {
-    font-size: 6vw; /* Increased from 5.5vw */
-    margin: 0 1vw;
+    font-size: 5.5vw;
+    margin: 0 0.8vw;
     white-space: nowrap;
-    line-height: 1.2;
-    font-weight: normal; /* Slightly less emphasis */
-    color: #C7C8C8; /* Slightly dimmer than current prayer */
+    line-height: 1.1;
+    font-weight: normal;
+    color: #C7C8C8;
   }
 
   .next-prayer-name {
@@ -440,48 +443,64 @@ html {
 
 /* Extra small landscape screens - adjusted for nightstand */
 @media screen and (orientation: landscape) and (max-height: 500px) {
+  .day-time-box {
+    padding: 0.5vh 2vw;
+    min-height: 20vh;
+  }
+  
   .day-name {
-    font-size: 4.5vw;
-    margin: 0.2vh 0;
+    font-size: 4vw;
+    margin: 0.1vh 0;
   }
   .day-part {
-    font-size: 3.8vw;
-    margin: 0.2vh 0;
+    font-size: 3.5vw;
+    margin: 0.1vh 0;
   }
   .time {
-    font-size: 13vw;
+    font-size: 12vw;
   }
   .date-month {
-    font-size: 4vw;
-    margin: 0.2vh 0;
+    font-size: 3.5vw;
+    margin: 0.1vh 0;
   }
   .date-day {
-    font-size: 7vw;
-    margin: 0.2vh 0;
+    font-size: 6.5vw;
+    margin: 0.1vh 0;
   }
   .date-year {
-    font-size: 3.5vw;
-    margin: 0.2vh 0;
+    font-size: 3vw;
+    margin: 0.1vh 0;
+  }
+  
+  .prayer-info {
+    padding: 0.2vh 2vw;
+    max-height: 75vh;
   }
   
   .current-prayer-row {
-    padding: 1.5vh 4vw;
-    border-radius: 50px;
+    margin: 0.5vh 0 0.2vh 0;
+    padding: 0.8vh 3vw;
+    border-radius: 40px;
     border-width: 3px;
   }
   
   .current-prayer-name,
   .current-prayer-time {
-    font-size: 6vw;
+    font-size: 5.5vw;
   }
   
   .prayer-time-break {
-    font-size: 5.5vw;
-    margin: 0.5vh 0;
+    font-size: 4.5vw;
+    margin: 0.1vh 0;
+  }
+  
+  .next-prayer-container {
+    margin: 0.1vh 0 0.3vh 0;
+    padding: 0.3vh 1.5vw;
   }
   
   .next-prayer-name,
   .next-prayer-time {
-    font-size: 5vw;
+    font-size: 4.8vw;
   }
 }
