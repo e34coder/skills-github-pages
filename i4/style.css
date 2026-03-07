@@ -299,8 +299,7 @@ html {
   }
 }
 
-/* Landscape Mode Adjustments - EVEN SPACING */
-/* Landscape Mode Adjustments - VERTICALLY ALIGNED with consistent sizing */
+/* Landscape Mode Adjustments - Smaller time, larger date components */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -335,7 +334,7 @@ html {
   }
 
   .day-name {
-    font-size: 4vw;  /* Same as date-month */
+    font-size: 5vw;  /* Increased from 4vw */
     margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
@@ -350,21 +349,21 @@ html {
   }
 
   .day-icon {
-    width: 7.5vw;  /* Same as date-day size (approx) */
-    height: 7.5vw;
-    max-width: 70px;
-    max-height: 70px;
+    width: 9vw;  /* Increased from 7.5vw */
+    height: 9vw;
+    max-width: 90px;
+    max-height: 90px;
   }
 
   .day-part {
-    font-size: 3.5vw;  /* Same as date-year */
+    font-size: 4.5vw;  /* Increased from 3.5vw */
     margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
   }
 
   .time {
-    font-size: 14vw;
+    font-size: 10vw;  /* REDUCED from 14vw - MUCH SMALLER */
     margin: 0 1vw;
     line-height: 1;
     flex: 2;
@@ -383,14 +382,14 @@ html {
   }
 
   .date-month {
-    font-size: 4vw;  /* Same as day-name */
+    font-size: 5vw;  /* Increased from 4vw (matches day-name) */
     margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
   }
 
   .date-day {
-    font-size: 7.5vw;  /* Same as icon size */
+    font-size: 9vw;  /* Increased from 7.5vw (matches icon) */
     margin: 0.2vh 0;
     line-height: 1.1;
     font-weight: bold;
@@ -398,7 +397,7 @@ html {
   }
 
   .date-year {
-    font-size: 3.5vw;  /* Same as day-part */
+    font-size: 4.5vw;  /* Increased from 3.5vw (matches day-part) */
     margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
@@ -480,38 +479,38 @@ html {
   }
   
   .day-name {
-    font-size: 3.5vw;  /* Slightly smaller */
+    font-size: 4.5vw;  /* Increased from 3.5vw */
     margin: 0.1vh 0;
   }
 
   .day-icon {
-    width: 6.5vw;  /* Slightly smaller */
-    height: 6.5vw;
-    max-width: 60px;
-    max-height: 60px;
+    width: 8vw;  /* Increased from 6.5vw */
+    height: 8vw;
+    max-width: 70px;
+    max-height: 70px;
   }
   
   .day-part {
-    font-size: 3vw;  /* Slightly smaller */
+    font-size: 4vw;  /* Increased from 3vw */
     margin: 0.1vh 0;
   }
   
   .time {
-    font-size: 12vw;
+    font-size: 9vw;  /* REDUCED from 12vw - MUCH SMALLER */
   }
   
   .date-month {
-    font-size: 3.5vw;  /* Same as day-name */
+    font-size: 4.5vw;  /* Increased from 3.5vw (matches day-name) */
     margin: 0.1vh 0;
   }
   
   .date-day {
-    font-size: 6.5vw;  /* Same as icon */
+    font-size: 8vw;  /* Increased from 6.5vw (matches icon) */
     margin: 0.1vh 0;
   }
   
   .date-year {
-    font-size: 3vw;  /* Same as day-part */
+    font-size: 4vw;  /* Increased from 3vw (matches day-part) */
     margin: 0.1vh 0;
   }
   
