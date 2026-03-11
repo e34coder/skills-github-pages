@@ -434,6 +434,7 @@ function updateClock() {
   }
 }
 
+// REPLACE your updatePrayerInfo function with this corrected version
 function updatePrayerInfo() {
   if (!currentDayData) return;
   
@@ -452,37 +453,49 @@ function updatePrayerInfo() {
   const now = new Date();
   const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
   
-  let currentPrayer = null;
-  let currentPrayerTime = null;
-  let nextPrayer = null;
-  let nextPrayerTime = null;
-  
+  // Convert prayer times to minutes
   const prayerTimesInMinutes = currentDayData.map(prayer => {
     const [hour, minute] = prayer.time.split(':');
     return parseInt(hour) * 60 + parseInt(minute);
   });
   
-  for (let i = 0; i < currentDayData.length; i++) {
+  let currentPrayer = null;
+  let currentPrayerTime = null;
+  let nextPrayer = null;
+  let nextPrayerTime = null;
+  
+  // Find current and next prayer
+  for (let i = 0; i < prayerTimesInMinutes.length; i++) {
     if (prayerTimesInMinutes[i] <= currentTimeInMinutes) {
       currentPrayer = currentDayData[i].name;
       currentPrayerTime = currentDayData[i].time;
       
-      if (i < currentDayData.length - 1) {
+      // Next prayer is the next one in the array, or first of next day
+      if (i < prayerTimesInMinutes.length - 1) {
         nextPrayer = currentDayData[i + 1].name;
         nextPrayerTime = currentDayData[i + 1].time;
       } else {
+        // Last prayer of the day - next is first prayer of tomorrow (Fajr)
         nextPrayer = currentDayData[0].name;
         nextPrayerTime = currentDayData[0].time;
       }
     }
   }
   
-  // Handle case when current time is before first prayer of the day
+  // If current time is before the first prayer of the day (Fajr)
+  // Then current prayer is the last prayer of previous day (Isha)
+  // And next prayer is the first prayer of today (Fajr)
   if (!currentPrayer) {
+    // Before Fajr - current is Isha (last prayer of previous day)
     currentPrayer = currentDayData[currentDayData.length - 1].name;
     currentPrayerTime = currentDayData[currentDayData.length - 1].time;
+    // Next is Fajr (first prayer of today)
     nextPrayer = currentDayData[0].name;
     nextPrayerTime = currentDayData[0].time;
+    
+    console.log('Before Fajr - Current:', currentPrayer, 'Next:', nextPrayer);
+  } else {
+    console.log('Normal - Current:', currentPrayer, 'Next:', nextPrayer);
   }
   
   const formatPrayerTime = (time) => {
@@ -499,6 +512,7 @@ function updatePrayerInfo() {
   nextPrayerNameEl.textContent = nextPrayer;
   nextPrayerTimeEl.textContent = formatPrayerTime(nextPrayerTime);
 }
+
 
 function startClock() {
   updateClock();
