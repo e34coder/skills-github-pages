@@ -289,7 +289,8 @@ html {
   }
 }
 
-/* Landscape Mode Adjustments - COMPLETELY OVERRIDE ALL BASE STYLES */
+
+/* Landscape Mode Adjustments - AM/PM UNDER TIME, LARGER TEXT */
 @media screen and (orientation: landscape) {
   /* Override all base styles with !important to ensure they take effect */
   .day-time-box {
@@ -297,11 +298,11 @@ html {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 4vh 5vw 4vh 5vw !important; /* Even more bottom padding */
+    padding: 4vh 5vw 4vh 5vw !important;
     width: 100% !important;
     margin: 0 !important;
     flex: 0 0 auto !important;
-    min-height: 30vh !important;
+    min-height: 32vh !important;
     border-bottom: 4px solid #00ff00 !important;
   }
 
@@ -328,8 +329,8 @@ html {
   }
 
   .day-name {
-    font-size: 4.5vw !important;
-    margin: 0.2vh 0 !important;
+    font-size: 6vw !important;  /* INCREASED from 4.5vw */
+    margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     font-weight: bold !important;
@@ -341,29 +342,38 @@ html {
     display: flex !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    margin: 0.2vh 0 !important;
+    margin: 0.3vh 0 !important;
     width: 100% !important;
   }
 
   .day-icon {
-    width: 7vw !important;
-    height: 7vw !important;
-    max-width: 70px !important;
-    max-height: 70px !important;
+    width: 8vw !important;  /* Slightly increased */
+    height: 8vw !important;
+    max-width: 80px !important;
+    max-height: 80px !important;
   }
 
   .day-part {
-    font-size: 4vw !important;
-    margin: 0.2vh 0 !important;
+    font-size: 5vw !important;  /* INCREASED from 4vw */
+    margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     text-align: left !important;
     width: 100% !important;
   }
 
-  .time {
+  .time-container {
     flex: 0 0 30% !important;
-    font-size: 7vw !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .time {
+    font-size: 8vw !important;  /* Slightly larger */
     margin: 0 !important;
     line-height: 1 !important;
     padding: 0 !important;
@@ -373,10 +383,21 @@ html {
     -webkit-background-clip: unset !important;
     -webkit-text-fill-color: #FFFFFF !important;
     background-clip: unset !important;
+    font-weight: bold !important;
+  }
+
+  .ampm {
+    font-size: 3.5vw !important;
+    margin-top: 0.5vh !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    color: #C7C8C8 !important;
+    font-weight: normal !important;
+    letter-spacing: 0.2vw !important;
   }
 
   .time::after {
-    display: none !important; /* Remove the glow in landscape */
+    display: none !important;
   }
 
   .date-container {
@@ -390,17 +411,18 @@ html {
   }
 
   .date-month {
-    font-size: 4.5vw !important;
-    margin: 0.2vh 0 !important;
+    font-size: 6vw !important;  /* INCREASED from 4.5vw */
+    margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     text-align: right !important;
     width: 100% !important;
+    font-weight: bold !important;
   }
 
   .date-day {
-    font-size: 7vw !important;
-    margin: 0.2vh 0 !important;
+    font-size: 9vw !important;  /* INCREASED from 7vw */
+    margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     font-weight: bold !important;
     color: #FFFFFF !important;
@@ -409,8 +431,8 @@ html {
   }
 
   .date-year {
-    font-size: 4vw !important;
-    margin: 0.2vh 0 !important;
+    font-size: 5vw !important;  /* INCREASED from 4vw */
+    margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     text-align: right !important;
@@ -418,7 +440,7 @@ html {
   }
 
   .prayer-info {
-    margin: 6vh 0 3vh 0 !important; /* EVEN MORE top margin */
+    margin: 5vh 0 3vh 0 !important;
     width: 100% !important;
     padding: 0.5vh 5vw !important;
     display: flex !important;
