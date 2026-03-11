@@ -290,7 +290,7 @@ html {
 }
 
 
-/* Landscape Mode Adjustments - AM/PM UNDER TIME, LARGER TEXT */
+/* Landscape Mode Adjustments - AM/PM UNDER TIME, LARGER TEXT, TIGHTER SIDES */
 @media screen and (orientation: landscape) {
   /* Override all base styles with !important to ensure they take effect */
   .day-time-box {
@@ -298,7 +298,7 @@ html {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 4vh 5vw 4vh 5vw !important;
+    padding: 4vh 2vw 4vh 2vw !important;  /* REDUCED side padding from 5vw to 2vw */
     width: 100% !important;
     margin: 0 !important;
     flex: 0 0 auto !important;
@@ -329,13 +329,14 @@ html {
   }
 
   .day-name {
-    font-size: 6vw !important;  /* INCREASED from 4.5vw */
+    font-size: 6vw !important;
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     font-weight: bold !important;
     text-align: left !important;
     width: 100% !important;
+    padding-left: 0 !important;  /* Remove any left padding */
   }
 
   .day-icon-container {
@@ -347,14 +348,14 @@ html {
   }
 
   .day-icon {
-    width: 8vw !important;  /* Slightly increased */
+    width: 8vw !important;
     height: 8vw !important;
     max-width: 80px !important;
     max-height: 80px !important;
   }
 
   .day-part {
-    font-size: 5vw !important;  /* INCREASED from 4vw */
+    font-size: 5vw !important;
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
@@ -373,7 +374,7 @@ html {
   }
 
   .time {
-    font-size: 8vw !important;  /* Slightly larger */
+    font-size: 8vw !important;
     margin: 0 !important;
     line-height: 1 !important;
     padding: 0 !important;
@@ -387,13 +388,14 @@ html {
   }
 
   .ampm {
-    font-size: 3.5vw !important;
-    margin-top: 0.5vh !important;
+    font-size: 8vw !important;  /* SAME as time */
+    margin-top: 0.2vh !important;
     line-height: 1 !important;
     text-align: center !important;
-    color: #C7C8C8 !important;
-    font-weight: normal !important;
-    letter-spacing: 0.2vw !important;
+    color: #FFFFFF !important;  /* White to match time */
+    font-weight: bold !important;  /* Bold to match time */
+    letter-spacing: normal !important;
+    text-transform: uppercase !important;  /* Make AM/PM uppercase */
   }
 
   .time::after {
@@ -411,17 +413,18 @@ html {
   }
 
   .date-month {
-    font-size: 6vw !important;  /* INCREASED from 4.5vw */
+    font-size: 6vw !important;
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     text-align: right !important;
     width: 100% !important;
     font-weight: bold !important;
+    padding-right: 0 !important;  /* Remove any right padding */
   }
 
   .date-day {
-    font-size: 9vw !important;  /* INCREASED from 7vw */
+    font-size: 9vw !important;
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     font-weight: bold !important;
@@ -431,7 +434,7 @@ html {
   }
 
   .date-year {
-    font-size: 5vw !important;  /* INCREASED from 4vw */
+    font-size: 5vw !important;
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
@@ -442,7 +445,7 @@ html {
   .prayer-info {
     margin: 5vh 0 3vh 0 !important;
     width: 100% !important;
-    padding: 0.5vh 5vw !important;
+    padding: 0.5vh 2vw !important;  /* REDUCED side padding */
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-evenly !important;
@@ -507,3 +510,5 @@ html {
     color: #FFFFFF !important;
   }
 }
+
+
