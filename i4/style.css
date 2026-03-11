@@ -288,9 +288,7 @@ html {
     margin: 1vh 0;
   }
 }
-
-
-/* Landscape Mode Adjustments - AM/PM UNDER TIME, LARGER TEXT, TIGHTER SIDES */
+/* Landscape Mode Adjustments - CENTERED COLUMNS */
 @media screen and (orientation: landscape) {
   /* Override all base styles with !important to ensure they take effect */
   .day-time-box {
@@ -298,7 +296,7 @@ html {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 4vh 2vw 4vh 2vw !important;  /* REDUCED side padding from 5vw to 2vw */
+    padding: 4vh 2vw 4vh 2vw !important;
     width: 100% !important;
     margin: 0 !important;
     flex: 0 0 auto !important;
@@ -324,7 +322,7 @@ html {
     padding: 0 !important;
     display: flex !important;
     flex-direction: column !important;
-    align-items: flex-start !important;
+    align-items: center !important;  /* CHANGED from flex-start to center */
     justify-content: center !important;
   }
 
@@ -334,14 +332,13 @@ html {
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
     font-weight: bold !important;
-    text-align: left !important;
+    text-align: center !important;  /* CHANGED from left to center */
     width: 100% !important;
-    padding-left: 0 !important;  /* Remove any left padding */
   }
 
   .day-icon-container {
     display: flex !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;  /* CHANGED from flex-start to center */
     align-items: center !important;
     margin: 0.3vh 0 !important;
     width: 100% !important;
@@ -359,7 +356,7 @@ html {
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
-    text-align: left !important;
+    text-align: center !important;  /* CHANGED from left to center */
     width: 100% !important;
   }
 
@@ -388,14 +385,14 @@ html {
   }
 
   .ampm {
-    font-size: 8vw !important;  /* SAME as time */
+    font-size: 8vw !important;
     margin-top: 0.2vh !important;
     line-height: 1 !important;
     text-align: center !important;
-    color: #FFFFFF !important;  /* White to match time */
-    font-weight: bold !important;  /* Bold to match time */
+    color: #FFFFFF !important;
+    font-weight: bold !important;
     letter-spacing: normal !important;
-    text-transform: uppercase !important;  /* Make AM/PM uppercase */
+    text-transform: uppercase !important;
   }
 
   .time::after {
@@ -408,7 +405,7 @@ html {
     padding: 0 !important;
     display: flex !important;
     flex-direction: column !important;
-    align-items: flex-end !important;
+    align-items: center !important;  /* CHANGED from flex-end to center */
     justify-content: center !important;
   }
 
@@ -417,10 +414,9 @@ html {
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
-    text-align: right !important;
+    text-align: center !important;  /* CHANGED from right to center */
     width: 100% !important;
     font-weight: bold !important;
-    padding-right: 0 !important;  /* Remove any right padding */
   }
 
   .date-day {
@@ -429,7 +425,7 @@ html {
     line-height: 1.1 !important;
     font-weight: bold !important;
     color: #FFFFFF !important;
-    text-align: right !important;
+    text-align: center !important;  /* CHANGED from right to center */
     width: 100% !important;
   }
 
@@ -438,14 +434,14 @@ html {
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     color: #C7C8C8 !important;
-    text-align: right !important;
+    text-align: center !important;  /* CHANGED from right to center */
     width: 100% !important;
   }
 
   .prayer-info {
     margin: 5vh 0 3vh 0 !important;
     width: 100% !important;
-    padding: 0.5vh 2vw !important;  /* REDUCED side padding */
+    padding: 0.5vh 2vw !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-evenly !important;
@@ -510,5 +506,4 @@ html {
     color: #FFFFFF !important;
   }
 }
-
 
