@@ -300,7 +300,8 @@ html {
 }
 
 
-/* Landscape Mode Adjustments - PROPER 3 COLUMN LAYOUT */
+
+/* Landscape Mode Adjustments - PROPER 3 COLUMN LAYOUT with LINE SPACE */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -316,26 +317,40 @@ html {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 2vh 5vw 1vh 5vw;  /* More side padding */
+    padding: 3vh 5vw 3vh 5vw;  /* Equal top and bottom padding - INCREASED BOTTOM PADDING */
     width: 100%;
     margin: 0;
     flex: 0 0 auto;
-    min-height: 25vh;
+    min-height: 28vh;  /* Increased height */
+    border-bottom: 4px solid #00ff00;  /* Ensure border is at the bottom of this box */
+  }
+
+  /* Status colors - these will override the border color */
+  .day-time-box.status-green {
+    border-bottom: 6px solid #00ff00;
+  }
+
+  .day-time-box.status-yellow {
+    border-bottom: 6px solid #ffff00;
+  }
+
+  .day-time-box.status-red {
+    border-bottom: 6px solid #ff0000;
   }
 
   .day-container {
-    flex: 0 0 25%;  /* Fixed width percentage */
+    flex: 0 0 25%;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;  /* Align left */
+    align-items: flex-start;
     justify-content: center;
   }
 
   .day-name {
     font-size: 4.5vw;
-    margin: 0.1vh 0;
+    margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
     font-weight: bold;
@@ -347,7 +362,7 @@ html {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin: 0.1vh 0;
+    margin: 0.2vh 0;
     width: 100%;
   }
 
@@ -360,7 +375,7 @@ html {
 
   .day-part {
     font-size: 4vw;
-    margin: 0.1vh 0;
+    margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
     text-align: left;
@@ -368,8 +383,8 @@ html {
   }
 
   .time {
-    flex: 0 0 30%;  /* Fixed width percentage - slightly more space for time */
-    font-size: 7vw;  /* Smaller to create more space */
+    flex: 0 0 30%;
+    font-size: 7vw;
     margin: 0;
     line-height: 1;
     padding: 0;
@@ -378,18 +393,18 @@ html {
   }
 
   .date-container {
-    flex: 0 0 25%;  /* Fixed width percentage */
+    flex: 0 0 25%;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;  /* Align right */
+    align-items: flex-end;
     justify-content: center;
   }
 
   .date-month {
     font-size: 4.5vw;
-    margin: 0.1vh 0;
+    margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
     text-align: right;
@@ -397,8 +412,8 @@ html {
   }
 
   .date-day {
-    font-size: 7vw;  /* Smaller to match time */
-    margin: 0.1vh 0;
+    font-size: 7vw;
+    margin: 0.2vh 0;
     line-height: 1.1;
     font-weight: bold;
     color: #FFFFFF;
@@ -408,7 +423,7 @@ html {
 
   .date-year {
     font-size: 4vw;
-    margin: 0.1vh 0;
+    margin: 0.2vh 0;
     line-height: 1.1;
     color: #C7C8C8;
     text-align: right;
@@ -416,7 +431,7 @@ html {
   }
 
   .prayer-info {
-    margin: 2vh 0 2vh 0;  /* Increased top margin to push down from line */
+    margin: 4vh 0 2vh 0;  /* DRAMATICALLY INCREASED top margin to push down from line */
     width: 100%;
     padding: 0.5vh 5vw;
     display: flex;
@@ -425,7 +440,7 @@ html {
     align-items: center;
     flex: 1;
     min-height: 0;
-    max-height: 70vh;
+    max-height: 65vh;
   }
 
   .current-prayer-row {
@@ -433,11 +448,11 @@ html {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 0.8vh 0;  /* Increased vertical margin */
+    margin: 1vh 0;  /* Increased vertical margin */
     width: auto;
     border: 4px solid #FFFFFF;
     border-radius: 50px;
-    padding: 1.2vh 4vw;
+    padding: 1.5vh 4vw;  /* Slightly more padding */
     background-color: rgba(255, 255, 255, 0.15);
     white-space: nowrap;
   }
@@ -457,8 +472,8 @@ html {
   }
 
   .next-prayer-container {
-    margin: 0.8vh 0;  /* Increased vertical margin */
-    padding: 0.4vh 2vw;
+    margin: 1vh 0;  /* Increased vertical margin */
+    padding: 0.5vh 2vw;
     white-space: nowrap;
     display: inline-flex;
     justify-content: center;
