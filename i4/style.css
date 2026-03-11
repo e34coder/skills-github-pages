@@ -298,8 +298,7 @@ html {
     margin: 1vh 0;
   }
 }
-
-/* Landscape Mode Adjustments - TIGHTER SPACING, LARGER DATE COMPONENTS */
+/* Landscape Mode Adjustments - TIGHTER SPACING, FIXED CLIPPING */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -314,18 +313,18 @@ html {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    padding: 0.5vh 2vw;  /* Reduced top/bottom padding */
+    padding: 1.5vh 2vw 0.8vh 2vw;  /* Increased top padding, reduced bottom padding to move line down */
     width: 100%;
     margin: 0;
     flex-wrap: nowrap;
     flex: 0 0 auto;
-    min-height: 22vh;  /* Slightly reduced */
+    min-height: 24vh;
   }
 
   .day-container {
     flex: 1;
     min-width: 180px;
-    margin: 0;
+    margin: 0 1vw 0 2vw;  /* Added left margin to nudge right */
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -334,36 +333,37 @@ html {
   }
 
   .day-name {
-    font-size: 6vw;  /* Increased from 5vw */
-    margin: 0.1vh 0;  /* Reduced margin */
+    font-size: 5.5vw;  /* Slightly reduced from 6vw to prevent clipping */
+    margin: 0.1vh 0;
     line-height: 1;
     color: #C7C8C8;
     font-weight: bold;
+    padding-left: 0.5vw;  /* Add a little padding to the left */
   }
 
   .day-icon-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0.1vh 0;  /* Reduced margin */
+    margin: 0.1vh 0;
   }
 
   .day-icon {
-    width: 10vw;  /* Increased from 9vw */
-    height: 10vw;
-    max-width: 100px;
-    max-height: 100px;
+    width: 9vw;  /* Slightly reduced from 10vw */
+    height: 9vw;
+    max-width: 90px;
+    max-height: 90px;
   }
 
   .day-part {
-    font-size: 5vw;  /* Increased from 4.5vw */
-    margin: 0.1vh 0;  /* Reduced margin */
+    font-size: 4.8vw;  /* Slightly reduced from 5vw */
+    margin: 0.1vh 0;
     line-height: 1;
     color: #C7C8C8;
   }
 
   .time {
-    font-size: 9vw;  /* REDUCED from 10vw to make room for larger dates */
+    font-size: 9vw;
     margin: 0 1vw;
     line-height: 1;
     flex: 2;
@@ -373,7 +373,7 @@ html {
   .date-container {
     flex: 1;
     min-width: 180px;
-    margin: 0;
+    margin: 0 2vw 0 1vw;  /* Added right margin for balance */
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -382,38 +382,38 @@ html {
   }
 
   .date-month {
-    font-size: 6vw;  /* Increased from 5vw (matches day-name) */
-    margin: 0.1vh 0;  /* Reduced margin */
+    font-size: 5.5vw;  /* Slightly reduced from 6vw */
+    margin: 0.1vh 0;
     line-height: 1;
     color: #C7C8C8;
   }
 
   .date-day {
-    font-size: 10vw;  /* Increased from 9vw (matches icon) */
-    margin: 0.1vh 0;  /* Reduced margin */
+    font-size: 9vw;  /* Slightly reduced from 10vw */
+    margin: 0.1vh 0;
     line-height: 1;
     font-weight: bold;
     color: #FFFFFF;
   }
 
   .date-year {
-    font-size: 5vw;  /* Increased from 4.5vw (matches day-part) */
-    margin: 0.1vh 0;  /* Reduced margin */
+    font-size: 4.8vw;  /* Slightly reduced from 5vw */
+    margin: 0.1vh 0;
     line-height: 1;
     color: #C7C8C8;
   }
 
   .prayer-info {
-    margin: 0;
+    margin: 1vh 0 2vh 0;  /* Top margin to create space from line, bottom margin for bottom of screen */
     width: 100%;
-    padding: 0.5vh 2vw;  /* Reduced padding */
+    padding: 0.5vh 2vw;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
     flex: 1;
     min-height: 0;
-    max-height: 75vh;
+    max-height: 70vh;
   }
 
   .current-prayer-row {
@@ -421,11 +421,11 @@ html {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 0.2vh 0;  /* Reduced margin */
+    margin: 0.5vh 0;  /* Increased from 0.2vh for better spacing */
     width: auto;
     border: 4px solid #FFFFFF;
     border-radius: 50px;
-    padding: 1.2vh 4vw;  /* Slightly reduced padding */
+    padding: 1.2vh 4vw;
     background-color: rgba(255, 255, 255, 0.15);
     white-space: nowrap;
   }
@@ -445,8 +445,8 @@ html {
   }
 
   .next-prayer-container {
-    margin: 0.2vh 0;  /* Reduced margin */
-    padding: 0.4vh 2vw;  /* Reduced padding */
+    margin: 0.5vh 0;  /* Increased from 0.2vh for better spacing */
+    padding: 0.4vh 2vw;
     white-space: nowrap;
     display: inline-flex;
     justify-content: center;
