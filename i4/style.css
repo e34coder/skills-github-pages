@@ -1,4 +1,4 @@
-/* style.css - Complete file with doubled icon size */
+/* style.css - Complete fixed version */
 * {
   margin: 0;
   padding: 0;
@@ -23,7 +23,6 @@ html {
 /* Status border - no dot, just the bottom border */
 .day-time-box {
   border-bottom: 4px solid #00ff00;
-  /* No text shadow */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -52,7 +51,6 @@ html {
   font-size: 25vw;
   font-weight: bold;
   color: #FFFFFF;
-  /* No text shadows */
   background: linear-gradient(45deg, #ffffff, #f0f0f0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -92,7 +90,6 @@ html {
   font-weight: bold;
 }
 
-/* Icon container - DOUBLED SIZE */
 .day-icon-container {
   display: flex;
   justify-content: center;
@@ -101,10 +98,10 @@ html {
 }
 
 .day-icon {
-  width: 30vw;  /* Doubled from 15vw */
-  height: 30vw; /* Doubled from 15vw */
-  max-width: 160px;  /* Doubled from 80px */
-  max-height: 160px; /* Doubled from 80px */
+  width: 30vw;
+  height: 30vw;
+  max-width: 160px;
+  max-height: 160px;
 }
 
 .day-part {
@@ -153,15 +150,6 @@ html {
   height: 100%;
 }
 
-.current-prayer-name,
-.current-prayer-time {
-  margin: 0;
-  color: #FFFFFF;
-  font-size: 12vw;
-  font-weight: bold;
-  white-space: normal;
-}
-
 .current-prayer-row {
   display: flex;
   flex-direction: row;
@@ -183,6 +171,8 @@ html {
   margin: 0 1vw;
   white-space: nowrap;
   display: inline-block;
+  color: #FFFFFF;
+  font-weight: bold;
 }
 
 .next-prayer-container {
@@ -232,8 +222,8 @@ html {
   }
 
   .day-icon {
-    width: 40vw;  /* Doubled from 20vw */
-    height: 40vw; /* Doubled from 20vw */
+    width: 40vw;
+    height: 40vw;
     max-width: 200px;
     max-height: 200px;
   }
@@ -299,201 +289,199 @@ html {
   }
 }
 
-
-
-/* Landscape Mode Adjustments - PROPER 3 COLUMN LAYOUT with LINE SPACE */
+/* Landscape Mode Adjustments - COMPLETELY OVERRIDE ALL BASE STYLES */
 @media screen and (orientation: landscape) {
-  body, html {
-    padding: 0;
-    margin: 0;
-    justify-content: space-between;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
-
+  /* Override all base styles with !important to ensure they take effect */
   .day-time-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 3vh 5vw 3vh 5vw;  /* Equal top and bottom padding - INCREASED BOTTOM PADDING */
-    width: 100%;
-    margin: 0;
-    flex: 0 0 auto;
-    min-height: 28vh;  /* Increased height */
-    border-bottom: 4px solid #00ff00;  /* Ensure border is at the bottom of this box */
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 4vh 5vw 4vh 5vw !important; /* Even more bottom padding */
+    width: 100% !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    min-height: 30vh !important;
+    border-bottom: 4px solid #00ff00 !important;
   }
 
-  /* Status colors - these will override the border color */
   .day-time-box.status-green {
-    border-bottom: 6px solid #00ff00;
+    border-bottom: 6px solid #00ff00 !important;
   }
 
   .day-time-box.status-yellow {
-    border-bottom: 6px solid #ffff00;
+    border-bottom: 6px solid #ffff00 !important;
   }
 
   .day-time-box.status-red {
-    border-bottom: 6px solid #ff0000;
+    border-bottom: 6px solid #ff0000 !important;
   }
 
   .day-container {
-    flex: 0 0 25%;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+    flex: 0 0 25% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
   }
 
   .day-name {
-    font-size: 4.5vw;
-    margin: 0.2vh 0;
-    line-height: 1.1;
-    color: #C7C8C8;
-    font-weight: bold;
-    text-align: left;
-    width: 100%;
+    font-size: 4.5vw !important;
+    margin: 0.2vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width: 100% !important;
   }
 
   .day-icon-container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 0.2vh 0;
-    width: 100%;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    margin: 0.2vh 0 !important;
+    width: 100% !important;
   }
 
   .day-icon {
-    width: 7vw;
-    height: 7vw;
-    max-width: 70px;
-    max-height: 70px;
+    width: 7vw !important;
+    height: 7vw !important;
+    max-width: 70px !important;
+    max-height: 70px !important;
   }
 
   .day-part {
-    font-size: 4vw;
-    margin: 0.2vh 0;
-    line-height: 1.1;
-    color: #C7C8C8;
-    text-align: left;
-    width: 100%;
+    font-size: 4vw !important;
+    margin: 0.2vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    text-align: left !important;
+    width: 100% !important;
   }
 
   .time {
-    flex: 0 0 30%;
-    font-size: 7vw;
-    margin: 0;
-    line-height: 1;
-    padding: 0;
-    text-align: center;
-    white-space: nowrap;
+    flex: 0 0 30% !important;
+    font-size: 7vw !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    background-clip: unset !important;
+  }
+
+  .time::after {
+    display: none !important; /* Remove the glow in landscape */
   }
 
   .date-container {
-    flex: 0 0 25%;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
+    flex: 0 0 25% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
   }
 
   .date-month {
-    font-size: 4.5vw;
-    margin: 0.2vh 0;
-    line-height: 1.1;
-    color: #C7C8C8;
-    text-align: right;
-    width: 100%;
+    font-size: 4.5vw !important;
+    margin: 0.2vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    text-align: right !important;
+    width: 100% !important;
   }
 
   .date-day {
-    font-size: 7vw;
-    margin: 0.2vh 0;
-    line-height: 1.1;
-    font-weight: bold;
-    color: #FFFFFF;
-    text-align: right;
-    width: 100%;
+    font-size: 7vw !important;
+    margin: 0.2vh 0 !important;
+    line-height: 1.1 !important;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
+    text-align: right !important;
+    width: 100% !important;
   }
 
   .date-year {
-    font-size: 4vw;
-    margin: 0.2vh 0;
-    line-height: 1.1;
-    color: #C7C8C8;
-    text-align: right;
-    width: 100%;
+    font-size: 4vw !important;
+    margin: 0.2vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    text-align: right !important;
+    width: 100% !important;
   }
 
   .prayer-info {
-    margin: 4vh 0 2vh 0;  /* DRAMATICALLY INCREASED top margin to push down from line */
-    width: 100%;
-    padding: 0.5vh 5vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    flex: 1;
-    min-height: 0;
-    max-height: 65vh;
+    margin: 6vh 0 3vh 0 !important; /* EVEN MORE top margin */
+    width: 100% !important;
+    padding: 0.5vh 5vw !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    align-items: center !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: 60vh !important;
   }
 
   .current-prayer-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin: 1vh 0;  /* Increased vertical margin */
-    width: auto;
-    border: 4px solid #FFFFFF;
-    border-radius: 50px;
-    padding: 1.5vh 4vw;  /* Slightly more padding */
-    background-color: rgba(255, 255, 255, 0.15);
-    white-space: nowrap;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 1.5vh 0 !important;
+    width: auto !important;
+    border: 4px solid #FFFFFF !important;
+    border-radius: 50px !important;
+    padding: 1.5vh 4vw !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    white-space: nowrap !important;
   }
 
   .current-prayer-name,
   .current-prayer-time {
-    font-size: 6vw;
-    margin: 0 0.8vw;
-    white-space: nowrap;
-    display: inline-block;
-    line-height: 1;
-    font-weight: bold;
+    font-size: 6vw !important;
+    margin: 0 0.8vw !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    line-height: 1 !important;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
   }
 
   .current-prayer-time {
-    margin-left: 0.3vw;
+    margin-left: 0.3vw !important;
   }
 
   .next-prayer-container {
-    margin: 1vh 0;  /* Increased vertical margin */
-    padding: 0.5vh 2vw;
-    white-space: nowrap;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent;
-    border: none;
+    margin: 1.5vh 0 !important;
+    padding: 0.5vh 2vw !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: transparent !important;
+    border: none !important;
   }
 
   .next-prayer-name,
   .next-prayer-time {
-    font-size: 5vw;
-    margin: 0 0.8vw;
-    white-space: nowrap;
-    line-height: 1;
-    font-weight: normal;
-    color: #C7C8C8;
+    font-size: 5vw !important;
+    margin: 0 0.8vw !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    font-weight: normal !important;
+    color: #C7C8C8 !important;
   }
 
   .next-prayer-name {
-    font-weight: bold;
-    color: #FFFFFF;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
   }
 }
