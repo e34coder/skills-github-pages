@@ -353,8 +353,8 @@ html {
 
   .now-label {
     font-size: 5.5vw !important;
-    font-weight: normal !important;
-    color: #C7C8C8 !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
     line-height: 1.2 !important;
     margin-bottom: 0.3vh !important;
     text-transform: uppercase !important;
@@ -460,7 +460,7 @@ html {
     background-color: rgba(255, 255, 255, 0.15) !important;
     min-width: 250px !important;
     border-radius: 60px !important;
-    border: 1px solid rgba(255, 255, 255, 0.55) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.55) !important;
   }
 
   .current-prayer-box .prayer-name,
