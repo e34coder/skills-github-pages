@@ -438,7 +438,7 @@ function updateClock() {
   }
 }
 
-// REPLACE your updatePrayerInfo function with this completely rewritten version
+// Update the updatePrayerInfo function to use the new structure
 function updatePrayerInfo() {
   if (!currentDayData) return;
   
