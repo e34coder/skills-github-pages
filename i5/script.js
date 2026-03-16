@@ -272,7 +272,7 @@ function am_pm(hours) {
   return hours >= 12 ? 'pm' : 'am';
 }
 
-// Replace your updateDayIcon function with this version
+// Replace your updateDayIcon function with this version - NO SPACE VERSION
 function updateDayIcon() {
   const canvas = document.getElementById('dayIcon');
   if (!canvas) return;
@@ -289,29 +289,29 @@ function updateDayIcon() {
   // Afternoon: 12pm to 6pm
   // Evening: 6pm to 6am
   if (hours >= 6 && hours < 12) {
-    // Morning - sun clipped to top half (same size as full sun)
+    // Morning - sun clipped to top half, fills canvas
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, 0, 100, 50);
     ctx.clip();
     
     ctx.beginPath();
-    ctx.arc(50, 40, 25, 0, 2 * Math.PI);
+    ctx.arc(50, 70, 35, 0, 2 * Math.PI);  // Moved down to fill top half
     ctx.fillStyle = '#FFB347';
     ctx.fill();
     ctx.strokeStyle = '#FF8C00';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
     
     ctx.strokeStyle = '#FFB347';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     
     for (let i = 0; i < 8; i++) {
       let angle = (i / 8) * (2 * Math.PI);
-      let x1 = 50 + Math.cos(angle) * 28;
-      let y1 = 40 + Math.sin(angle) * 28;
-      let x2 = 50 + Math.cos(angle) * 42;
-      let y2 = 40 + Math.sin(angle) * 42;
+      let x1 = 50 + Math.cos(angle) * 40;
+      let y1 = 70 + Math.sin(angle) * 40;
+      let x2 = 50 + Math.cos(angle) * 55;
+      let y2 = 70 + Math.sin(angle) * 55;
       
       ctx.beginPath();
       ctx.moveTo(x1, y1);
@@ -329,24 +329,24 @@ function updateDayIcon() {
     ctx.stroke();
     
   } else if (hours >= 12 && hours < 18) {
-    // Afternoon - full sun
+    // Afternoon - full sun filling canvas
     ctx.beginPath();
-    ctx.arc(50, 40, 25, 0, 2 * Math.PI);
+    ctx.arc(50, 50, 40, 0, 2 * Math.PI);  // Larger, centered
     ctx.fillStyle = '#FFD700';
     ctx.fill();
     ctx.strokeStyle = '#FF8C00';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
     
     ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     
     for (let i = 0; i < 8; i++) {
       let angle = (i / 8) * (2 * Math.PI);
-      let x1 = 50 + Math.cos(angle) * 28;
-      let y1 = 40 + Math.sin(angle) * 28;
-      let x2 = 50 + Math.cos(angle) * 42;
-      let y2 = 40 + Math.sin(angle) * 42;
+      let x1 = 50 + Math.cos(angle) * 45;
+      let y1 = 50 + Math.sin(angle) * 45;
+      let x2 = 50 + Math.cos(angle) * 65;
+      let y2 = 50 + Math.sin(angle) * 65;
       
       ctx.beginPath();
       ctx.moveTo(x1, y1);
@@ -355,22 +355,24 @@ function updateDayIcon() {
     }
     
   } else {
-    // Night - just the moon, no stars
+    // Night - moon filling canvas, no stars
     ctx.beginPath();
-    ctx.arc(50, 40, 25, 0, 2 * Math.PI);  // Same size as sun (25 radius)
+    ctx.arc(50, 50, 40, 0, 2 * Math.PI);  // Larger moon, centered
     ctx.fillStyle = '#F0F0F0';
     ctx.fill();
     ctx.strokeStyle = '#C0C0C0';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
     
-    // Crescent cutout
+    // Crescent cutout - adjusted for larger moon
     ctx.beginPath();
-    ctx.arc(38, 35, 18, 0, 2 * Math.PI);  // Adjusted for 25 radius moon
+    ctx.arc(30, 40, 30, 0, 2 * Math.PI);
     ctx.fillStyle = '#000000';
     ctx.fill();
   }
 }
+
+
 // Update the time formatting in your updateClock function
 function updateClock() {
   // Get all elements with null checks
