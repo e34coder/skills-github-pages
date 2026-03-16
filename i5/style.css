@@ -352,7 +352,7 @@ html {
   }
 
   .now-label {
-    font-size: 5.5vw !important;
+    font-size: 6.5vw !important;
     font-weight: bold !important;
     color: #ffffff !important;
     line-height: 1.2 !important;
@@ -372,7 +372,7 @@ html {
     -webkit-background-clip: unset !important;
     -webkit-text-fill-color: #FFFFFF !important;
     background-clip: unset !important;
-    font-weight: bold !important;
+    font-weight: normal !important;
   }
 
   .time::after {
@@ -404,7 +404,7 @@ html {
     margin: 0.3vh 0 !important;
     line-height: 1.1 !important;
     font-weight: bold !important;
-    color: #FFFFFF !important;
+    color: #C7C8C8 !important 
     text-align: center !important;
     width: 100% !important;
   }
