@@ -1,4 +1,4 @@
-/* style.css - Complete file with gradient border for next prayer */
+/* style.css - Complete file with no border on next prayer */
 * {
   margin: 0;
   padding: 0;
@@ -232,9 +232,7 @@ html {
   }
   
   .next-prayer-box {
-    border: 2px solid transparent !important;
-    border-image: linear-gradient(to right, #FFFFFF, rgba(255, 255, 255, 0.2)) !important;
-    border-image-slice: 1 !important;
+    border: none !important;
   }
   
   .prayer-arrow {
@@ -262,7 +260,7 @@ html {
   }
 }
 
-/* Landscape Mode Adjustments - with gradient border for next prayer */
+/* Landscape Mode Adjustments - with border only on current prayer */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -461,9 +459,7 @@ html {
     background-color: rgba(255, 255, 255, 0.15) !important;
     min-width: 250px !important;
     border-radius: 60px !important;
-    border: 2px solid transparent !important;
-    border-image: linear-gradient(to right, #FFFFFF, rgba(255, 255, 255, 0.2)) !important;
-    border-image-slice: 1 !important;
+    border: none !important;
   }
 
   .current-prayer-box .prayer-name,
