@@ -1,4 +1,4 @@
-/* style.css - Complete fixed version */
+/* style.css - Complete file with new bottom half design */
 * {
   margin: 0;
   padding: 0;
@@ -138,66 +138,16 @@ html {
   line-height: 1.2;
 }
 
+/* Prayer info - NEW DESIGN */
 .prayer-info {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   margin: 0;
   padding: 2vh 5vw;
   width: 100%;
   flex: 2;
-  height: 100%;
-}
-
-.current-prayer-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  width: 100%;
-  border: 5px solid #FFFFFF;
-  border-radius: 60px;
-  padding: 3vh 8vw;
-  background-color: rgba(255, 255, 255, 0.15);
-  white-space: normal;
-  width: 90%;
-}
-
-.current-prayer-name,
-.current-prayer-time {
-  font-size: 12vw;
-  margin: 0 1vw;
-  white-space: nowrap;
-  display: inline-block;
-  color: #FFFFFF;
-  font-weight: bold;
-}
-
-.next-prayer-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-  background-color: transparent;
-  border: none;
-}
-
-.next-prayer-name,
-.next-prayer-time {
-  color: #C7C8C8;
-  margin: 0 2vw;
-  font-size: 10vw;
-  font-weight: normal;
-}
-
-.next-prayer-name {
-  font-weight: bold;
-  color: #FFFFFF;
 }
 
 /* Portrait Mode Adjustments */
@@ -260,37 +210,24 @@ html {
     padding: 2vh 2vw;
     width: 100%;
     min-height: auto;
-    justify-content: space-evenly;
-  }
-
-  .current-prayer-name,
-  .current-prayer-time {
-    font-size: 15vw;
-    margin: 0;
-    white-space: normal;
-  }
-
-  .current-prayer-row {
-    margin: 1vh 0;
-    padding: 4vh 8vw;
-    border-width: 6px;
-    border-radius: 80px;
-    width: 95%;
-  }
-
-  .next-prayer-name,
-  .next-prayer-time {
-    font-size: 13vw;
-    margin: 1vh 3vw;
-  }
-  
-  .next-prayer-container {
-    margin: 1vh 0;
   }
   
   .prayer-row {
     flex-direction: column !important;
     width: 100% !important;
+    align-items: center !important;
+  }
+  
+  .current-prayer-box {
+    margin-bottom: 2vh !important;
+    width: 80% !important;
+    padding: 3vh 6vw !important;
+  }
+  
+  .next-prayer-box {
+    margin-top: 2vh !important;
+    width: 80% !important;
+    padding: 2vh 6vw !important;
   }
   
   .prayer-arrow {
@@ -298,12 +235,36 @@ html {
     margin: 1vh 0 !important;
     font-size: 8vw !important;
     color: #FFFFFF !important;
+    font-weight: bold !important;
+  }
+  
+  .current-prayer-box .prayer-name {
+    font-size: 8vw !important;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
+  }
+  
+  .current-prayer-box .prayer-time {
+    font-size: 6vw !important;
+    color: #FFFFFF !important;
+    margin-top: 0.5vh !important;
+  }
+  
+  .next-prayer-box .prayer-name {
+    font-size: 6vw !important;
+    font-weight: normal !important;
+    color: #C7C8C8 !important;
+  }
+  
+  .next-prayer-box .prayer-time {
+    font-size: 5vw !important;
+    color: #C7C8C8 !important;
+    margin-top: 0.3vh !important;
   }
 }
 
-/* Landscape Mode Adjustments - CENTERED COLUMNS WITH SIDE-BY-SIDE PRAYERS */
+/* Landscape Mode Adjustments - CENTERED COLUMNS WITH NEW BOTTOM DESIGN */
 @media screen and (orientation: landscape) {
-  /* Override all base styles with !important to ensure they take effect */
   body, html {
     padding: 0;
     margin: 0;
@@ -313,6 +274,7 @@ html {
     width: 100vw;
   }
 
+  /* TOP PART - Exactly as before */
   .day-time-box {
     display: flex !important;
     flex-direction: row !important;
@@ -459,6 +421,7 @@ html {
     width: 100% !important;
   }
 
+  /* BOTTOM PART - NEW DESIGN with current prayer in circle on left, arrow, next on right */
   .prayer-info {
     margin: 5vh 0 3vh 0 !important;
     width: 100% !important;
@@ -480,7 +443,7 @@ html {
     margin: 0 auto !important;
   }
 
-  .current-prayer-row {
+  .current-prayer-box {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -490,44 +453,43 @@ html {
     padding: 2vh 4vw !important;
     background-color: rgba(255, 255, 255, 0.15) !important;
     min-width: 250px !important;
-    margin: 0 !important;
   }
 
-  .next-prayer-container {
+  .next-prayer-box {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 2vh 4vw !important;
     min-width: 250px !important;
-    margin: 0 !important;
-    background-color: transparent !important;
-    border: none !important;
   }
 
-  .current-prayer-name,
-  .current-prayer-time {
+  .current-prayer-box .prayer-name {
     font-size: 5.5vw !important;
-    margin: 0.2vh 0 !important;
-    white-space: nowrap !important;
-    line-height: 1.2 !important;
     font-weight: bold !important;
     color: #FFFFFF !important;
+    line-height: 1.2 !important;
   }
 
-  .next-prayer-name {
+  .current-prayer-box .prayer-time {
+    font-size: 4.5vw !important;
+    color: #FFFFFF !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5vh !important;
+  }
+
+  .next-prayer-box .prayer-name {
     font-size: 4.5vw !important;
     font-weight: normal !important;
     color: #C7C8C8 !important;
     line-height: 1.2 !important;
-    margin: 0.2vh 0 !important;
   }
 
-  .next-prayer-time {
+  .next-prayer-box .prayer-time {
     font-size: 4vw !important;
     color: #C7C8C8 !important;
     line-height: 1.2 !important;
-    margin: 0.2vh 0 !important;
+    margin-top: 0.3vh !important;
   }
 
   .prayer-arrow {
