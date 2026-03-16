@@ -2,7 +2,6 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body,
@@ -353,7 +352,7 @@ html {
   }
 
   .now-label {
-    font-size: 2.5vw !important;
+    font-size: 5.5vw !important;
     font-weight: normal !important;
     color: #C7C8C8 !important;
     line-height: 1.2 !important;
