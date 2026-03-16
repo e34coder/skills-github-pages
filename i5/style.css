@@ -1,4 +1,4 @@
-/* style.css - Complete fixed version */
+/* style.css - Complete file */
 * {
   margin: 0;
   padding: 0;
@@ -141,63 +141,12 @@ html {
 .prayer-info {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   margin: 0;
   padding: 2vh 5vw;
   width: 100%;
   flex: 2;
-  height: 100%;
-}
-
-.current-prayer-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  width: 100%;
-  border: 5px solid #FFFFFF;
-  border-radius: 60px;
-  padding: 3vh 8vw;
-  background-color: rgba(255, 255, 255, 0.15);
-  white-space: normal;
-  width: 90%;
-}
-
-.current-prayer-name,
-.current-prayer-time {
-  font-size: 12vw;
-  margin: 0 1vw;
-  white-space: nowrap;
-  display: inline-block;
-  color: #FFFFFF;
-  font-weight: bold;
-}
-
-.next-prayer-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-  background-color: transparent;
-  border: none;
-}
-
-.next-prayer-name,
-.next-prayer-time {
-  color: #C7C8C8;
-  margin: 0 2vw;
-  font-size: 10vw;
-  font-weight: normal;
-}
-
-.next-prayer-name {
-  font-weight: bold;
-  color: #FFFFFF;
 }
 
 /* Portrait Mode Adjustments */
@@ -260,40 +209,59 @@ html {
     padding: 2vh 2vw;
     width: 100%;
     min-height: auto;
-    justify-content: space-evenly;
-  }
-
-  .current-prayer-name,
-  .current-prayer-time {
-    font-size: 15vw;
-    margin: 0;
-    white-space: normal;
-  }
-
-  .current-prayer-row {
-    margin: 1vh 0;
-    padding: 4vh 8vw;
-    border-width: 6px;
-    border-radius: 80px;
-    width: 95%;
-  }
-
-  .next-prayer-name,
-  .next-prayer-time {
-    font-size: 13vw;
-    margin: 1vh 3vw;
   }
   
-  .next-prayer-container {
-    margin: 1vh 0;
+  .prayer-row {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .current-prayer-box {
+    margin-bottom: 3vh !important;
+    width: 80% !important;
+    padding: 3vh 6vw !important;
+  }
+  
+  .next-prayer-box {
+    margin-top: 3vh !important;
+    width: 80% !important;
+    padding: 2vh 6vw !important;
+  }
+  
+  .prayer-arrow {
+    transform: rotate(90deg) !important;
+    margin: 1vh 0 !important;
+    font-size: 8vw !important;
+  }
+  
+  .current-prayer-box .prayer-name {
+    font-size: 8vw !important;
+  }
+  
+  .current-prayer-box .prayer-time {
+    font-size: 6vw !important;
+  }
+  
+  .next-prayer-box .prayer-name {
+    font-size: 6vw !important;
+  }
+  
+  .next-prayer-box .prayer-time {
+    font-size: 5vw !important;
   }
 }
-/* Keep your existing top part styles exactly as they were */
-/* Only update the prayer-info section and add the new prayer-row styles */
 
-/* Landscape Mode Adjustments - KEEP TOP PART SAME, ONLY UPDATE BOTTOM */
+/* Landscape Mode Adjustments */
 @media screen and (orientation: landscape) {
-  /* TOP PART - EXACTLY AS BEFORE - DO NOT CHANGE */
+  body, html {
+    padding: 0;
+    margin: 0;
+    justify-content: space-between;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
   .day-time-box {
     display: flex !important;
     flex-direction: row !important;
@@ -440,7 +408,6 @@ html {
     width: 100% !important;
   }
 
-  /* BOTTOM PART - NEW LAYOUT WITH CURRENT AND NEXT ON SAME LINE */
   .prayer-info {
     margin: 5vh 0 3vh 0 !important;
     width: 100% !important;
@@ -519,46 +486,3 @@ html {
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.7) !important;
   }
 }
-
-/* Portrait Mode - Stack vertically */
-@media screen and (orientation: portrait) {
-  .prayer-row {
-    flex-direction: column !important;
-    width: 100% !important;
-  }
-  
-  .current-prayer-box {
-    margin-bottom: 3vh !important;
-    width: 80% !important;
-    padding: 3vh 6vw !important;
-  }
-  
-  .next-prayer-box {
-    margin-top: 3vh !important;
-    width: 80% !important;
-    padding: 2vh 6vw !important;
-  }
-  
-  .prayer-arrow {
-    transform: rotate(90deg) !important;
-    margin: 1vh 0 !important;
-    font-size: 8vw !important;
-  }
-  
-  .current-prayer-box .prayer-name {
-    font-size: 8vw !important;
-  }
-  
-  .current-prayer-box .prayer-time {
-    font-size: 6vw !important;
-  }
-  
-  .next-prayer-box .prayer-name {
-    font-size: 6vw !important;
-  }
-  
-  .next-prayer-box .prayer-time {
-    font-size: 5vw !important;
-  }
-}
-
