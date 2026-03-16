@@ -272,6 +272,7 @@ function am_pm(hours) {
   return hours >= 12 ? 'pm' : 'am';
 }
 
+// Replace your updateDayIcon function with this version
 function updateDayIcon() {
   const canvas = document.getElementById('dayIcon');
   if (!canvas) return;
@@ -288,7 +289,7 @@ function updateDayIcon() {
   // Afternoon: 12pm to 6pm
   // Evening: 6pm to 6am
   if (hours >= 6 && hours < 12) {
-    // Morning - sun clipped to top half
+    // Morning - sun clipped to top half (same size as full sun)
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, 0, 100, 50);
@@ -354,9 +355,9 @@ function updateDayIcon() {
     }
     
   } else {
-    // Night - moon and stars
+    // Night - just the moon, no stars
     ctx.beginPath();
-    ctx.arc(60, 40, 22, 0, 2 * Math.PI);
+    ctx.arc(50, 40, 25, 0, 2 * Math.PI);  // Same size as sun (25 radius)
     ctx.fillStyle = '#F0F0F0';
     ctx.fill();
     ctx.strokeStyle = '#C0C0C0';
@@ -365,30 +366,11 @@ function updateDayIcon() {
     
     // Crescent cutout
     ctx.beginPath();
-    ctx.arc(43, 35, 18, 0, 2 * Math.PI);
+    ctx.arc(38, 35, 18, 0, 2 * Math.PI);  // Adjusted for 25 radius moon
     ctx.fillStyle = '#000000';
-    ctx.fill();
-    
-    // Stars
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.arc(20, 20, 2, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.arc(80, 70, 2, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.arc(30, 70, 1.5, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.arc(70, 20, 1.5, 0, 2 * Math.PI);
     ctx.fill();
   }
 }
-
 // Update the time formatting in your updateClock function
 function updateClock() {
   // Get all elements with null checks
