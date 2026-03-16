@@ -1,0 +1,508 @@
+/* style.css - Complete fixed version */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  background-color: #000000;
+  color: #C7C8C8;
+  text-align: center;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* Status border - no dot, just the bottom border */
+.day-time-box {
+  border-bottom: 4px solid #00ff00;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3vh 2vw;
+  width: 100%;
+  flex: 1.5;
+  transition: all 0.3s ease;
+}
+
+/* Status colors */
+.day-time-box.status-green {
+  border-bottom: 6px solid #00ff00;
+}
+
+.day-time-box.status-yellow {
+  border-bottom: 6px solid #ffff00;
+}
+
+.day-time-box.status-red {
+  border-bottom: 6px solid #ff0000;
+}
+
+.time {
+  font-size: 25vw;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: linear-gradient(45deg, #ffffff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  display: inline-block;
+  padding: 0;
+  line-height: 1;
+  margin: 2vh 0;
+}
+
+.time::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 80%);
+  z-index: -1;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.day-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1vh 0;
+}
+
+.day-name {
+  font-size: 12vw;
+  color: #C7C8C8;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.day-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1vh 0 1.5vh 0;
+}
+
+.day-icon {
+  width: 30vw;
+  height: 30vw;
+  max-width: 160px;
+  max-height: 160px;
+}
+
+.day-part {
+  font-size: 10vw;
+  color: #C7C8C8;
+  line-height: 1.2;
+  margin-top: 0.5vh;
+}
+
+.date-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1vh 0;
+}
+
+.date-month {
+  font-size: 10vw;
+  color: #C7C8C8;
+  line-height: 1.2;
+}
+
+.date-day {
+  font-size: 18vw;
+  color: #C7C8C8;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.date-year {
+  font-size: 8vw;
+  color: #C7C8C8;
+  line-height: 1.2;
+}
+
+.prayer-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0;
+  padding: 2vh 5vw;
+  width: 100%;
+  flex: 2;
+  height: 100%;
+}
+
+.current-prayer-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  width: 100%;
+  border: 5px solid #FFFFFF;
+  border-radius: 60px;
+  padding: 3vh 8vw;
+  background-color: rgba(255, 255, 255, 0.15);
+  white-space: normal;
+  width: 90%;
+}
+
+.current-prayer-name,
+.current-prayer-time {
+  font-size: 12vw;
+  margin: 0 1vw;
+  white-space: nowrap;
+  display: inline-block;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.next-prayer-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  background-color: transparent;
+  border: none;
+}
+
+.next-prayer-name,
+.next-prayer-time {
+  color: #C7C8C8;
+  margin: 0 2vw;
+  font-size: 10vw;
+  font-weight: normal;
+}
+
+.next-prayer-name {
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+/* Portrait Mode Adjustments */
+@media screen and (orientation: portrait) {
+  body, html {
+    padding: 0;
+    margin: 0;
+    justify-content: flex-start;
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  .day-time-box {
+    flex-direction: column;
+    padding: 4vh 2vw;
+    width: 100%;
+  }
+
+  .day-name {
+    font-size: 16vw;
+    margin: 0.5vh 0;
+  }
+
+  .day-icon {
+    width: 40vw;
+    height: 40vw;
+    max-width: 200px;
+    max-height: 200px;
+  }
+
+  .day-part {
+    font-size: 14vw;
+    margin: 1vh 0;
+  }
+
+  .time {
+    font-size: 28vw;
+    margin: 2vh 0 1vh 0;
+    padding: 0;
+  }
+
+  .date-month {
+    font-size: 14vw;
+    margin: 0.5vh 0;
+  }
+
+  .date-day {
+    font-size: 22vw;
+    margin: 0.5vh 0;
+  }
+
+  .date-year {
+    font-size: 12vw;
+    margin: 0.5vh 0 2vh 0;
+  }
+
+  .prayer-info {
+    flex-direction: column;
+    margin: 2vh 2vw;
+    padding: 2vh 2vw;
+    width: 100%;
+    min-height: auto;
+    justify-content: space-evenly;
+  }
+
+  .current-prayer-name,
+  .current-prayer-time {
+    font-size: 15vw;
+    margin: 0;
+    white-space: normal;
+  }
+
+  .current-prayer-row {
+    margin: 1vh 0;
+    padding: 4vh 8vw;
+    border-width: 6px;
+    border-radius: 80px;
+    width: 95%;
+  }
+
+  .next-prayer-name,
+  .next-prayer-time {
+    font-size: 13vw;
+    margin: 1vh 3vw;
+  }
+  
+  .next-prayer-container {
+    margin: 1vh 0;
+  }
+}
+/* Landscape Mode Adjustments - CENTERED COLUMNS */
+@media screen and (orientation: landscape) {
+  /* Override all base styles with !important to ensure they take effect */
+  .day-time-box {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 4vh 2vw 4vh 2vw !important;
+    width: 100% !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    min-height: 32vh !important;
+    border-bottom: 4px solid #00ff00 !important;
+  }
+
+  .day-time-box.status-green {
+    border-bottom: 6px solid #00ff00 !important;
+  }
+
+  .day-time-box.status-yellow {
+    border-bottom: 6px solid #ffff00 !important;
+  }
+
+  .day-time-box.status-red {
+    border-bottom: 6px solid #ff0000 !important;
+  }
+
+  .day-container {
+    flex: 0 0 25% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;  /* CHANGED from flex-start to center */
+    justify-content: center !important;
+  }
+
+  .day-name {
+    font-size: 6vw !important;
+    margin: 0.3vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    font-weight: bold !important;
+    text-align: center !important;  /* CHANGED from left to center */
+    width: 100% !important;
+  }
+
+  .day-icon-container {
+    display: flex !important;
+    justify-content: center !important;  /* CHANGED from flex-start to center */
+    align-items: center !important;
+    margin: 0.3vh 0 !important;
+    width: 100% !important;
+  }
+
+  .day-icon {
+    width: 8vw !important;
+    height: 8vw !important;
+    max-width: 80px !important;
+    max-height: 80px !important;
+  }
+
+  .day-part {
+    font-size: 5vw !important;
+    margin: 0.3vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    text-align: center !important;  /* CHANGED from left to center */
+    width: 100% !important;
+  }
+
+  .time-container {
+    flex: 0 0 30% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .time {
+    font-size: 8vw !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    background-clip: unset !important;
+    font-weight: bold !important;
+  }
+
+  .ampm {
+    font-size: 8vw !important;
+    margin-top: 0.2vh !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    color: #FFFFFF !important;
+    font-weight: bold !important;
+    letter-spacing: normal !important;
+    text-transform: uppercase !important;
+  }
+
+  .time::after {
+    display: none !important;
+  }
+
+  .date-container {
+    flex: 0 0 25% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;  /* CHANGED from flex-end to center */
+    justify-content: center !important;
+  }
+
+  .date-month {
+    font-size: 6vw !important;
+    margin: 0.3vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    text-align: center !important;  /* CHANGED from right to center */
+    width: 100% !important;
+    font-weight: bold !important;
+  }
+
+  .date-day {
+    font-size: 9vw !important;
+    margin: 0.3vh 0 !important;
+    line-height: 1.1 !important;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
+    text-align: center !important;  /* CHANGED from right to center */
+    width: 100% !important;
+  }
+
+  .date-year {
+    font-size: 5vw !important;
+    margin: 0.3vh 0 !important;
+    line-height: 1.1 !important;
+    color: #C7C8C8 !important;
+    text-align: center !important;  /* CHANGED from right to center */
+    width: 100% !important;
+  }
+
+  .prayer-info {
+    margin: 5vh 0 3vh 0 !important;
+    width: 100% !important;
+    padding: 0.5vh 2vw !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    align-items: center !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: 60vh !important;
+  }
+
+  .current-prayer-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 1.5vh 0 !important;
+    width: auto !important;
+    border: 4px solid #FFFFFF !important;
+    border-radius: 50px !important;
+    padding: 1.5vh 4vw !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    white-space: nowrap !important;
+  }
+
+  .current-prayer-name,
+  .current-prayer-time {
+    font-size: 6vw !important;
+    margin: 0 0.8vw !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    line-height: 1 !important;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
+  }
+
+  .current-prayer-time {
+    margin-left: 0.3vw !important;
+  }
+
+  .next-prayer-container {
+    margin: 1.5vh 0 !important;
+    padding: 0.5vh 2vw !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: transparent !important;
+    border: none !important;
+  }
+
+  .next-prayer-name,
+  .next-prayer-time {
+    font-size: 5vw !important;
+    margin: 0 0.8vw !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    font-weight: normal !important;
+    color: #C7C8C8 !important;
+  }
+
+  .next-prayer-name {
+    font-weight: bold !important;
+    color: #FFFFFF !important;
+  }
+}
