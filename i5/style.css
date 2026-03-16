@@ -1,4 +1,4 @@
-/* style.css - Complete file with no border on next prayer */
+/* style.css - Complete file with NOW time box */
 * {
   margin: 0;
   padding: 0;
@@ -45,34 +45,6 @@ html {
 
 .day-time-box.status-red {
   border-bottom: 6px solid #ff0000;
-}
-
-.time {
-  font-size: 25vw;
-  font-weight: bold;
-  color: #FFFFFF;
-  background: linear-gradient(45deg, #ffffff, #f0f0f0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
-  display: inline-block;
-  padding: 0;
-  line-height: 1;
-  margin: 2vh 0;
-}
-
-.time::after {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 80%);
-  z-index: -1;
-  border-radius: 50%;
-  opacity: 0.4;
 }
 
 .day-container {
@@ -183,10 +155,35 @@ html {
     margin: 1vh 0;
   }
 
+  .time-container {
+    margin: 2vh 0 !important;
+    padding: 3vh 6vw !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border: 4px solid #FFFFFF !important;
+    border-radius: 60px !important;
+    width: 80% !important;
+  }
+
+  .now-label {
+    font-size: 4vw !important;
+    font-weight: normal !important;
+    color: #C7C8C8 !important;
+    margin-bottom: 0.5vh !important;
+    text-transform: uppercase !important;
+  }
+
   .time {
-    font-size: 28vw;
-    margin: 2vh 0 1vh 0;
-    padding: 0;
+    font-size: 12vw !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    color: #FFFFFF !important;
+    font-weight: bold !important;
+    background: none !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+  }
+
+  .time::after {
+    display: none !important;
   }
 
   .date-month {
@@ -232,7 +229,7 @@ html {
   }
   
   .next-prayer-box {
-    border: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
   }
   
   .prayer-arrow {
@@ -260,7 +257,7 @@ html {
   }
 }
 
-/* Landscape Mode Adjustments - with border only on current prayer */
+/* Landscape Mode Adjustments - with NOW time box */
 @media screen and (orientation: landscape) {
   body, html {
     padding: 0;
@@ -340,6 +337,7 @@ html {
     width: 100% !important;
   }
 
+  /* NEW TIME CONTAINER - Matches current prayer box style */
   .time-container {
     flex: 0 0 30% !important;
     display: flex !important;
@@ -347,11 +345,25 @@ html {
     align-items: center !important;
     justify-content: center !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 2vh 2vw !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border: 4px solid #FFFFFF !important;
+    border-radius: 60px !important;
+    min-width: 280px !important;
+  }
+
+  .now-label {
+    font-size: 2.5vw !important;
+    font-weight: normal !important;
+    color: #C7C8C8 !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.3vh !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.2vw !important;
   }
 
   .time {
-    font-size: 8vw !important;
+    font-size: 7vw !important;  /* Larger than before */
     margin: 0 !important;
     line-height: 1 !important;
     padding: 0 !important;
@@ -362,16 +374,6 @@ html {
     -webkit-text-fill-color: #FFFFFF !important;
     background-clip: unset !important;
     font-weight: bold !important;
-  }
-
-  .ampm {
-    font-size: 8vw !important;
-    margin-top: 0.2vh !important;
-    line-height: 1 !important;
-    text-align: center !important;
-    color: #FFFFFF !important;
-    font-weight: bold !important;
-    text-transform: uppercase !important;
   }
 
   .time::after {
@@ -459,7 +461,7 @@ html {
     background-color: rgba(255, 255, 255, 0.15) !important;
     min-width: 250px !important;
     border-radius: 60px !important;
-    border: rgba(255, 255, 255, 0.55) 1px solid !important;
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
   }
 
   .current-prayer-box .prayer-name,
