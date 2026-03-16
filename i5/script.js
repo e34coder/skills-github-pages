@@ -389,11 +389,10 @@ function updateDayIcon() {
   }
 }
 
-// Update the updateClock function to separate time and AM/PM
+// Update the time formatting in your updateClock function
 function updateClock() {
   // Get all elements with null checks
   const clockElement = document.getElementById('clock');
-  const ampmElement = document.getElementById('ampm');
   const dayNameElement = document.getElementById('day-name');
   const dayPartElement = document.getElementById('day-part');
   const dateMonthElement = document.getElementById('date-month');
@@ -403,18 +402,16 @@ function updateClock() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
   const ampm = hours >= 12 ? 'pm' : 'am';
   const hour12 = hours % 12 || 12;
   
-  // Format time without AM/PM
-  const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+  // Format time without seconds
+  const formattedTime = `${hour12}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
   
   let partOfDay = hours < 12 ? 'Morning' : (hours < 18 ? 'Afternoon' : 'Evening');
   
   // Update elements only if they exist
   if (clockElement) clockElement.textContent = formattedTime;
-  if (ampmElement) ampmElement.textContent = ampm;
   
   const formattedDay = now.toLocaleDateString('en-US', { weekday: 'long' });
   const formattedMonth = now.toLocaleDateString('en-US', { month: 'long' });
@@ -437,7 +434,6 @@ function updateClock() {
     updatePrayerData();
   }
 }
-
 // Update the updatePrayerInfo function to use the new structure
 function updatePrayerInfo() {
   if (!currentDayData) return;
