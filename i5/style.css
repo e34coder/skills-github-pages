@@ -459,7 +459,7 @@ html {
     background-color: rgba(255, 255, 255, 0.15) !important;
     min-width: 250px !important;
     border-radius: 60px !important;
-    border: none !important;
+    border: rgba(255, 255, 255, 0.55) 1px solid !important;
   }
 
   .current-prayer-box .prayer-name,
