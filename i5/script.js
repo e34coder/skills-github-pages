@@ -418,7 +418,7 @@ function updateClock() {
     updatePrayerData();
   }
 }
-// Update the updatePrayerInfo function to use the new structure
+// Replace your updatePrayerInfo function with this corrected version
 function updatePrayerInfo() {
   if (!currentDayData) return;
   
@@ -456,16 +456,11 @@ function updatePrayerInfo() {
     // Before Fajr - current is Isha (last prayer of previous day)
     currentPrayerIndex = prayerTimesInMinutes.length - 1;
   } 
-  // Check if current time is after the last prayer (Isha)
-  else if (currentTimeInMinutes >= prayerTimesInMinutes[prayerTimesInMinutes.length - 1]) {
-    // After Isha - current is Isha, next is Fajr (tomorrow)
-    currentPrayerIndex = prayerTimesInMinutes.length - 1;
-  }
   else {
     // Find which prayer period we're in
-    for (let i = 0; i < prayerTimesInMinutes.length - 1; i++) {
-      if (currentTimeInMinutes >= prayerTimesInMinutes[i] && 
-          currentTimeInMinutes < prayerTimesInMinutes[i + 1]) {
+    // We look for the last prayer time that is less than or equal to current time
+    for (let i = prayerTimesInMinutes.length - 1; i >= 0; i--) {
+      if (prayerTimesInMinutes[i] <= currentTimeInMinutes) {
         currentPrayerIndex = i;
         break;
       }
