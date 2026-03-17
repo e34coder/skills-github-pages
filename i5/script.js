@@ -435,6 +435,11 @@ function updateClock() {
 	// Update the icon
 	updateDayIcon();
 
+	// Update current/next prayer by the current time (with cached prayer data)
+	if (currentDayData) {
+		updatePrayerInfo();
+	}
+
 	// Check if day changed (midnight)
 	const todayKey = getDateKey(now);
 	if (currentDateKey !== todayKey) {
