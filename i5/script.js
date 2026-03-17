@@ -1,5 +1,5 @@
 // script.js - Complete file with null checks
-const VERSION = "v1.02";
+const VERSION = "v1.03";
 let userLatitude, userLongitude;
 let prayerTimesCache = {}; // Format: { "2024-01-05": [...], "2024-01-06": [...], ... }
 let currentDateKey = null;
