@@ -1,4 +1,5 @@
 // script.js - Complete file with null checks
+const VERSION = "v1.01";
 let userLatitude, userLongitude;
 let prayerTimesCache = {}; // Format: { "2024-01-05": [...], "2024-01-06": [...], ... }
 let currentDateKey = null;
@@ -104,6 +105,11 @@ function updatePrayerData() {
 	const today = new Date();
 	const todayKey = getDateKey(today);
 	currentDateKey = todayKey;
+
+	const versionBadge = document.getElementById("version-badge");
+	if (versionBadge) {
+		versionBadge.textContent = VERSION;
+	}
 
 	const result = getDataForDate(today);
 
