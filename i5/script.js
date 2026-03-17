@@ -422,13 +422,11 @@ function updateClock() {
 function updatePrayerInfo() {
   if (!currentDayData) return;
   
-  // Get elements with null checks
   const currentPrayerNameEl = document.getElementById('current-prayer-name');
   const currentPrayerTimeEl = document.getElementById('current-prayer-time');
   const nextPrayerNameEl = document.getElementById('next-prayer-name');
   const nextPrayerTimeEl = document.getElementById('next-prayer-time');
   
-  // If any required elements are missing, return
   if (!currentPrayerNameEl || !currentPrayerTimeEl || !nextPrayerNameEl || !nextPrayerTimeEl) {
     console.error('Prayer info elements not found');
     return;
@@ -436,75 +434,70 @@ function updatePrayerInfo() {
   
   const now = new Date();
   const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
-  
-  console.log('Current time in minutes:', currentTimeInMinutes);
-  
-  // Convert prayer times to minutes
-  const prayerTimesInMinutes = currentDayData.map(prayer => {
-    const [hour, minute] = prayer.time.split(':');
-    return parseInt(hour) * 60 + parseInt(minute);
-  });
-  
-  console.log('Prayer times in minutes:', prayerTimesInMinutes);
-  console.log('Prayer names:', currentDayData.map(p => p.name));
-  
-  // Find the current prayer and next prayer
-  let currentPrayerIndex = -1;
-  
-  // Check if current time is before the first prayer (Fajr)
-  if (currentTimeInMinutes < prayerTimesInMinutes[0]) {
-    // Before Fajr - current is Isha (last prayer of previous day)
-    currentPrayerIndex = prayerTimesInMinutes.length - 1;
-  } 
-  else {
-    // Find which prayer period we're in
-    // We look for the last prayer time that is less than or equal to current time
-    for (let i = prayerTimesInMinutes.length - 1; i >= 0; i--) {
-      if (prayerTimesInMinutes[i] <= currentTimeInMinutes) {
-        currentPrayerIndex = i;
-        break;
-      }
-    }
+
+  const knownOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+  const prayerSchedule = [];
+
+  for (let prayer of currentDayData) {
+    if (!prayer.time || !prayer.name) continue;
+    const parts = prayer.time.split(':');
+    if (parts.length < 2) continue;
+    const hour = Number(parts[0]);
+    const minute = Number(parts[1]);
+    if (Number.isNaN(hour) || Number.isNaN(minute)) continue;
+    prayerSchedule.push({
+      name: prayer.name,
+      time: prayer.time,
+      minutes: hour * 60 + minute
+    });
   }
-  
-  // If we still couldn't determine (shouldn't happen with proper logic)
-  if (currentPrayerIndex === -1) {
-    console.error('Could not determine current prayer');
+
+  // Keep prayers in expected order to avoid API ordering quirks
+  prayerSchedule.sort((a, b) => knownOrder.indexOf(a.name) - knownOrder.indexOf(b.name));
+
+  // Ensure we have at least two prayers
+  if (prayerSchedule.length < 2) {
+    console.error('Prayer schedule incomplete', prayerSchedule);
     return;
   }
-  
-  // Get current prayer
-  const currentPrayer = currentDayData[currentPrayerIndex].name;
-  const currentPrayerTime = currentDayData[currentPrayerIndex].time;
-  
-  // Determine next prayer
-  let nextPrayerIndex;
-  if (currentPrayerIndex === prayerTimesInMinutes.length - 1) {
-    // Last prayer of the day - next is first prayer of tomorrow (Fajr)
-    nextPrayerIndex = 0;
-  } else {
-    nextPrayerIndex = currentPrayerIndex + 1;
+
+  let currentPrayerIdx = -1;
+
+  // Find the last prayer that is <= current time
+  for (let i = prayerSchedule.length - 1; i >= 0; i--) {
+    if (prayerSchedule[i].minutes <= currentTimeInMinutes) {
+      currentPrayerIdx = i;
+      break;
+    }
   }
-  
-  const nextPrayer = currentDayData[nextPrayerIndex].name;
-  const nextPrayerTime = currentDayData[nextPrayerIndex].time;
-  
-  console.log('Current prayer index:', currentPrayerIndex, 'Name:', currentPrayer);
-  console.log('Next prayer index:', nextPrayerIndex, 'Name:', nextPrayer);
-  
+
+  if (currentPrayerIdx === -1) {
+    // Current time is before first prayer (Fajr)
+    currentPrayerIdx = prayerSchedule.length - 1; // Isha from previous day
+  }
+
+  const nextPrayerIdx = (currentPrayerIdx + 1) % prayerSchedule.length;
+  const currentPrayer = prayerSchedule[currentPrayerIdx];
+  const nextPrayer = prayerSchedule[nextPrayerIdx];
+
+  console.log('Prayer schedule:', prayerSchedule.map(p => `${p.name}@${p.minutes}`));
+  console.log('Current time minutes:', currentTimeInMinutes, 'current index:', currentPrayerIdx, 'next index:', nextPrayerIdx);
+
   const formatPrayerTime = (time) => {
     const [hour, minute] = time.split(':');
-    let formattedHour = parseInt(hour);
-    const ampm = formattedHour >= 12 ? 'pm' : 'am';
-    if (formattedHour > 12) formattedHour -= 12;
-    if (formattedHour === 0) formattedHour = 12;
-    return `${formattedHour}:${minute} ${ampm}`;
+    let h = Number(hour);
+    if (Number.isNaN(h)) return time;
+    const ampm = h >= 12 ? 'pm' : 'am';
+    if (h === 0) h = 12;
+    if (h > 12) h -= 12;
+    const m = minute?.padStart(2, '0') ?? '00';
+    return `${h}:${m} ${ampm}`;
   };
-  
-  currentPrayerNameEl.textContent = currentPrayer;
-  currentPrayerTimeEl.textContent = formatPrayerTime(currentPrayerTime);
-  nextPrayerNameEl.textContent = nextPrayer;
-  nextPrayerTimeEl.textContent = formatPrayerTime(nextPrayerTime);
+
+  currentPrayerNameEl.textContent = currentPrayer.name;
+  currentPrayerTimeEl.textContent = formatPrayerTime(currentPrayer.time);
+  nextPrayerNameEl.textContent = nextPrayer.name;
+  nextPrayerTimeEl.textContent = formatPrayerTime(nextPrayer.time);
 }
 
 function startClock() {
